@@ -47,7 +47,7 @@ const Navbar = () => {
             </button>
           ))}
           <button
-            onClick={() => handleNav("Contact")}
+            onClick={() => navigate("/login")}
             className="bg-primary text-primary-foreground px-5 py-2 rounded-full text-sm font-medium transition-all hover:shadow-lg active:scale-95"
           >
             Login
