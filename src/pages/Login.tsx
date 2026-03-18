@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import mlritLogo from "@/assets/mlrit-logo.png";
+import loginBg from "@/assets/login-bg.png";
 
 type Role = "student" | "club" | "faculty" | "admin";
 
