@@ -1,10 +1,10 @@
 import React, { useState, useMemo } from "react";
-import { Eye, EyeOff, Loader2, CheckCircle2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Eye, EyeOff, Loader2, CheckCircle2, ArrowLeft, GraduationCap, Users, BookOpen, ShieldCheck } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import mlritLogo from "@/assets/mlrit-logo.png";
 
 type Role = "student" | "club" | "faculty" | "admin";
@@ -17,190 +17,265 @@ const CLUB_EMAILS = [
   "clubliterati@mlrit.ac.in",
   "apex@mlrit.ac.in",
 ];
-
 const ADMIN_EMAIL = "mlritclgadmin@mlrit.ac.in";
 const STATIC_PASSWORD = "Mlrit@123";
 const STUDENT_PATTERN = /^\d{2}r\d{2}a\d{2}[a-z]\d+@mlrit\.ac\.in$/i;
 
+const ROLES: { key: Role; label: string; icon: React.ReactNode; desc: string }[] = [
+  { key: "student", label: "Student", icon: <GraduationCap className="h-8 w-8" />, desc: "Access your student portal" },
+  { key: "club", label: "Club", icon: <Users className="h-8 w-8" />, desc: "Manage club activities" },
+  { key: "faculty", label: "Faculty", icon: <BookOpen className="h-8 w-8" />, desc: "Faculty resources & tools" },
+  { key: "admin", label: "Admin", icon: <ShieldCheck className="h-8 w-8" />, desc: "Administrative controls" },
+];
+
 function validateEmail(role: Role, email: string): string | null {
   const trimmed = email.trim().toLowerCase();
-
-  if (!trimmed) return null; // no error while empty
+  if (!trimmed) return null;
   if (!trimmed.endsWith("@mlrit.ac.in")) return "Only @mlrit.ac.in emails are allowed";
-
   switch (role) {
     case "student":
       if (CLUB_EMAILS.includes(trimmed) || trimmed === ADMIN_EMAIL || !STUDENT_PATTERN.test(trimmed))
         return "Only valid student college email IDs are allowed";
       return null;
-
     case "club":
-      if (!CLUB_EMAILS.includes(trimmed))
-        return "Access restricted to authorized club email IDs only";
+      if (!CLUB_EMAILS.includes(trimmed)) return "Access restricted to authorized club email IDs only";
       return null;
-
     case "faculty":
-      if (STUDENT_PATTERN.test(trimmed)) return "Only faculty email IDs are allowed";
-      if (CLUB_EMAILS.includes(trimmed)) return "Only faculty email IDs are allowed";
-      if (trimmed === ADMIN_EMAIL) return "Only faculty email IDs are allowed";
+      if (STUDENT_PATTERN.test(trimmed) || CLUB_EMAILS.includes(trimmed) || trimmed === ADMIN_EMAIL)
+        return "Only faculty email IDs are allowed";
       return null;
-
     case "admin":
-      if (trimmed !== ADMIN_EMAIL)
-        return "Only admin is authorized to access this portal";
+      if (trimmed !== ADMIN_EMAIL) return "Only admin is authorized to access this portal";
       return null;
   }
 }
 
 const Login: React.FC = () => {
-  const [role, setRole] = useState<Role | "">("");
+  const navigate = useNavigate();
+  const [selectedRole, setSelectedRole] = useState<Role | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [passwordError, setPasswordError] = useState("");
-  const [touched, setTouched] = useState({ email: false, password: false });
+  const [touched, setTouched] = useState({ email: false });
 
   const emailError = useMemo(
-    () => (touched.email && role ? validateEmail(role as Role, email) : null),
-    [email, role, touched.email]
+    () => (touched.email && selectedRole ? validateEmail(selectedRole, email) : null),
+    [email, selectedRole, touched.email]
   );
 
   const isFormValid = useMemo(() => {
-    if (!role || !email || !password) return false;
-    return !validateEmail(role as Role, email);
-  }, [role, email, password]);
+    if (!selectedRole || !email || !password) return false;
+    return !validateEmail(selectedRole, email);
+  }, [selectedRole, email, password]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setPasswordError("");
     if (!isFormValid) return;
-
     if (password !== STATIC_PASSWORD) {
       setPasswordError("Invalid password");
       return;
     }
-
     setLoading(true);
     await new Promise((r) => setTimeout(r, 1500));
     setLoading(false);
     setSuccess(true);
   };
 
-  if (success) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-secondary via-background to-secondary/50 p-4">
-        <Card className="w-full max-w-md border-0 shadow-[var(--shadow-hover)]">
-          <CardContent className="flex flex-col items-center gap-4 py-16">
-            <CheckCircle2 className="h-16 w-16 text-green-500" />
-            <h2 className="text-xl font-semibold text-foreground text-center">
-              Login successful! Redirecting to your portal...
-            </h2>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  const handleBack = () => {
+    if (success) { setSuccess(false); setSelectedRole(null); setEmail(""); setPassword(""); return; }
+    if (selectedRole) { setSelectedRole(null); setEmail(""); setPassword(""); setPasswordError(""); setTouched({ email: false }); return; }
+    navigate("/");
+  };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-secondary via-background to-secondary/50">
-      <div className="flex-1 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md border-0 shadow-[var(--shadow-hover)]">
-          <CardContent className="pt-8 pb-8 px-6 sm:px-8">
-            {/* Logo & Title */}
-            <div className="flex flex-col items-center gap-3 mb-8">
-              <img src={mlritLogo} alt="MLRIT Logo" className="h-16 w-16 object-contain" />
-              <div className="text-center">
-                <h1 className="text-2xl font-bold text-foreground">Campus Connect Login</h1>
-                <p className="text-sm text-muted-foreground mt-1">Access your portal securely</p>
-              </div>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Role Selection */}
-              <div className="space-y-2">
-                <Label htmlFor="role">Select Role</Label>
-                <Select value={role} onValueChange={(v) => { setRole(v as Role); setTouched((t) => ({ ...t, email: !!email })); }}>
-                  <SelectTrigger id="role" className="w-full">
-                    <SelectValue placeholder="Choose your role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="student">Student</SelectItem>
-                    <SelectItem value="club">Club</SelectItem>
-                    <SelectItem value="faculty">Faculty</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Email */}
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your college email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  onBlur={() => setTouched((t) => ({ ...t, email: true }))}
-                  className={emailError ? "border-destructive focus-visible:ring-destructive" : ""}
-                />
-                {emailError && (
-                  <p className="text-sm text-destructive">{emailError}</p>
-                )}
-              </div>
-
-              {/* Password */}
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => { setPassword(e.target.value); setPasswordError(""); }}
-                    onBlur={() => setTouched((t) => ({ ...t, password: true }))}
-                    className={passwordError ? "border-destructive focus-visible:ring-destructive pr-10" : "pr-10"}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                    tabIndex={-1}
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-                {passwordError && (
-                  <p className="text-sm text-destructive">{passwordError}</p>
-                )}
-              </div>
-
-              {/* Login Button */}
-              <Button
-                type="submit"
-                className="w-full"
-                size="lg"
-                disabled={!isFormValid || loading}
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Logging in...
-                  </>
-                ) : (
-                  "Login"
-                )}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+    <div className="min-h-screen relative overflow-hidden flex flex-col">
+      {/* Animated 3D Background */}
+      <div className="fixed inset-0 -z-10 bg-gradient-to-br from-[hsl(221,83%,12%)] via-[hsl(221,60%,20%)] to-[hsl(230,50%,8%)]">
+        {/* Floating orbs */}
+        <motion.div
+          className="absolute w-[500px] h-[500px] rounded-full opacity-30"
+          style={{ background: "radial-gradient(circle, hsl(221,83%,53%) 0%, transparent 70%)", top: "-10%", left: "-10%" }}
+          animate={{ x: [0, 80, 0], y: [0, 60, 0], scale: [1, 1.2, 1] }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute w-[400px] h-[400px] rounded-full opacity-20"
+          style={{ background: "radial-gradient(circle, hsl(200,80%,60%) 0%, transparent 70%)", bottom: "-5%", right: "-5%" }}
+          animate={{ x: [0, -60, 0], y: [0, -80, 0], scale: [1, 1.3, 1] }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute w-[300px] h-[300px] rounded-full opacity-15"
+          style={{ background: "radial-gradient(circle, hsl(250,70%,60%) 0%, transparent 70%)", top: "40%", right: "20%" }}
+          animate={{ x: [0, 40, -40, 0], y: [0, -50, 30, 0], scale: [1, 1.1, 0.9, 1] }}
+          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+        />
+        {/* Grid overlay */}
+        <div
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage: "linear-gradient(hsl(221,83%,53%) 1px, transparent 1px), linear-gradient(90deg, hsl(221,83%,53%) 1px, transparent 1px)",
+            backgroundSize: "60px 60px",
+          }}
+        />
       </div>
 
-      {/* Footer */}
-      <footer className="py-4 text-center text-sm text-muted-foreground">
+      {/* Back button */}
+      <div className="relative z-10 p-4 sm:p-6">
+        <button
+          onClick={handleBack}
+          className="flex items-center gap-2 text-white/70 hover:text-white transition-colors text-sm font-medium group"
+        >
+          <ArrowLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform" />
+          Back
+        </button>
+      </div>
+
+      {/* Main content */}
+      <div className="flex-1 flex items-center justify-center px-4 pb-8">
+        <AnimatePresence mode="wait">
+          {success ? (
+            <motion.div
+              key="success"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="w-full max-w-md backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-10 text-center shadow-2xl"
+            >
+              <CheckCircle2 className="h-16 w-16 text-green-400 mx-auto mb-4" />
+              <h2 className="text-xl font-semibold text-white">
+                Login successful! Redirecting to your portal...
+              </h2>
+            </motion.div>
+          ) : !selectedRole ? (
+            /* Role selection cards */
+            <motion.div
+              key="roles"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.4 }}
+              className="w-full max-w-3xl"
+            >
+              <div className="text-center mb-10">
+                <img src={mlritLogo} alt="MLRIT Logo" className="h-16 w-16 mx-auto mb-4 drop-shadow-lg" />
+                <h1 className="text-3xl font-bold text-white">Campus Connect Login</h1>
+                <p className="text-white/60 mt-2">Select your role to continue</p>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {ROLES.map((role, i) => (
+                  <motion.button
+                    key={role.key}
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.1, duration: 0.4 }}
+                    whileHover={{ y: -6, scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => setSelectedRole(role.key)}
+                    className="group relative backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-6 flex flex-col items-center gap-3 text-center transition-all duration-300 hover:bg-white/20 hover:border-white/30 hover:shadow-[0_8px_32px_rgba(59,130,246,0.25)] cursor-pointer"
+                  >
+                    <div className="p-3 rounded-xl bg-primary/20 text-primary-foreground group-hover:bg-primary/40 transition-colors">
+                      {role.icon}
+                    </div>
+                    <h3 className="text-white font-semibold text-lg">{role.label}</h3>
+                    <p className="text-white/50 text-xs leading-relaxed hidden sm:block">{role.desc}</p>
+                  </motion.button>
+                ))}
+              </div>
+            </motion.div>
+          ) : (
+            /* Login form */
+            <motion.div
+              key="form"
+              initial={{ opacity: 0, x: 60, rotateY: -15 }}
+              animate={{ opacity: 1, x: 0, rotateY: 0 }}
+              exit={{ opacity: 0, x: -60, rotateY: 15 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              className="w-full max-w-md"
+              style={{ perspective: 1000 }}
+            >
+              <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-8 shadow-2xl">
+                <div className="flex flex-col items-center gap-3 mb-8">
+                  <div className="p-3 rounded-xl bg-primary/20">
+                    {ROLES.find((r) => r.key === selectedRole)?.icon &&
+                      React.cloneElement(ROLES.find((r) => r.key === selectedRole)!.icon as React.ReactElement, {
+                        className: "h-8 w-8 text-blue-300",
+                      })}
+                  </div>
+                  <div className="text-center">
+                    <h2 className="text-2xl font-bold text-white">
+                      {ROLES.find((r) => r.key === selectedRole)?.label} Login
+                    </h2>
+                    <p className="text-white/50 text-sm mt-1">Access your portal securely</p>
+                  </div>
+                </div>
+
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-white/80">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="Enter your college email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      onBlur={() => setTouched({ email: true })}
+                      className={`bg-white/10 border-white/20 text-white placeholder:text-white/30 focus-visible:ring-primary/50 focus-visible:border-white/40 ${emailError ? "border-red-400 focus-visible:ring-red-400/50" : ""}`}
+                    />
+                    {emailError && <p className="text-sm text-red-400">{emailError}</p>}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="password" className="text-white/80">Password</Label>
+                    <div className="relative">
+                      <Input
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Enter your password"
+                        value={password}
+                        onChange={(e) => { setPassword(e.target.value); setPasswordError(""); }}
+                        className={`bg-white/10 border-white/20 text-white placeholder:text-white/30 pr-10 focus-visible:ring-primary/50 focus-visible:border-white/40 ${passwordError ? "border-red-400 focus-visible:ring-red-400/50" : ""}`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/80 transition-colors"
+                        tabIndex={-1}
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                    {passwordError && <p className="text-sm text-red-400">{passwordError}</p>}
+                  </div>
+
+                  <Button
+                    type="submit"
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/25"
+                    size="lg"
+                    disabled={!isFormValid || loading}
+                  >
+                    {loading ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Logging in...
+                      </>
+                    ) : (
+                      "Login"
+                    )}
+                  </Button>
+                </form>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      <footer className="relative z-10 py-4 text-center text-sm text-white/30">
         © 2026 MLRIT Campus Connect
       </footer>
     </div>
