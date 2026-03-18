@@ -152,7 +152,7 @@ const Login: React.FC = () => {
               className="w-full max-w-3xl"
             >
               <div className="text-center mb-10">
-                <img src={mlritLogo} alt="MLRIT Logo" className="h-16 w-16 mx-auto mb-4 drop-shadow-lg" />
+                <img src={mlritLogo} alt="MLRIT Logo" className="h-20 w-auto mx-auto mb-4 object-contain drop-shadow-lg" />
                 <h1 className="text-3xl font-bold text-foreground">Campus Connect Login</h1>
                 <p className="text-muted-foreground mt-2">Select your role to continue</p>
               </div>
