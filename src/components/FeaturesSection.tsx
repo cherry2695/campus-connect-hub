@@ -24,18 +24,6 @@ const features = [
   },
 ];
 
-const cardVariants = {
-  rest: {
-    y: 0,
-    boxShadow: "0 0 0 1px rgba(0,0,0,.03), 0 2px 4px rgba(0,0,0,.05), 0 12px 24px rgba(0,0,0,.03)",
-  },
-  hover: {
-    y: -4,
-    boxShadow: "0 0 0 1px rgba(0,0,0,.04), 0 4px 8px rgba(0,0,0,.06), 0 20px 40px rgba(0,0,0,.04)",
-    transition: { duration: 0.3, ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number] },
-  },
-};
-
 const FeaturesSection = () => (
   <section id="features" className="py-24 bg-secondary/50">
     <div className="container mx-auto px-4 lg:px-8">
@@ -51,9 +39,14 @@ const FeaturesSection = () => (
           <motion.div
             key={title}
             className="bg-background rounded-2xl p-6 cursor-default"
-            variants={cardVariants}
-            initial="rest"
-            whileHover="hover"
+            style={{
+              boxShadow: "0 0 0 1px rgba(0,0,0,.03), 0 2px 4px rgba(0,0,0,.05), 0 12px 24px rgba(0,0,0,.03)",
+            }}
+            whileHover={{
+              y: -4,
+              boxShadow: "0 0 0 1px rgba(0,0,0,.04), 0 4px 8px rgba(0,0,0,.06), 0 20px 40px rgba(0,0,0,.04)",
+            }}
+            transition={{ duration: 0.3 }}
           >
             <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center mb-5">
               <Icon className="w-5 h-5 text-primary" strokeWidth={1.5} />
