@@ -84,6 +84,9 @@ const Login: React.FC = () => {
     await new Promise((r) => setTimeout(r, 1500));
     setLoading(false);
     setSuccess(true);
+    if (selectedRole === "student") {
+      setTimeout(() => navigate("/student-dashboard"), 1500);
+    }
   };
 
   const handleBack = () => {
