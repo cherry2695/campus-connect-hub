@@ -33,6 +33,7 @@ const cardVariants = {
     y: -4,
     boxShadow: "0 0 0 1px rgba(0,0,0,.04), 0 4px 8px rgba(0,0,0,.06), 0 20px 40px rgba(0,0,0,.04)",
     transition: { duration: 0.3, ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number] },
+  },
 };
 
 const FeaturesSection = () => (
