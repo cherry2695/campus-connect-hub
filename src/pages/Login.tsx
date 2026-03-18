@@ -94,27 +94,11 @@ const Login: React.FC = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden flex flex-col">
-      {/* Light background with soft blue blobs */}
-      <div className="fixed inset-0 -z-10 bg-[hsl(220,30%,97%)]">
-        <motion.div
-          className="absolute w-[600px] h-[600px] rounded-full"
-          style={{ background: "radial-gradient(circle, hsl(221,83%,55%,0.35) 0%, hsl(221,83%,55%,0.08) 40%, transparent 70%)", top: "-15%", left: "-10%" }}
-          animate={{ x: [0, 50, 0], y: [0, 40, 0], scale: [1, 1.1, 1] }}
-          transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute w-[500px] h-[500px] rounded-full"
-          style={{ background: "radial-gradient(circle, hsl(215,70%,55%,0.25) 0%, hsl(215,70%,55%,0.06) 40%, transparent 70%)", bottom: "-10%", right: "-8%" }}
-          animate={{ x: [0, -40, 0], y: [0, -50, 0], scale: [1, 1.15, 1] }}
-          transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute w-[250px] h-[250px] rounded-full"
-          style={{ background: "radial-gradient(circle, hsl(30,80%,60%,0.12) 0%, transparent 70%)", bottom: "5%", right: "2%" }}
-          animate={{ x: [0, -20, 0], y: [0, -30, 0] }}
-          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-        />
-      </div>
+      {/* Background image */}
+      <div
+        className="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${loginBg})` }}
+      />
 
       {/* Back button */}
       <div className="relative z-10 p-4 sm:p-6">
