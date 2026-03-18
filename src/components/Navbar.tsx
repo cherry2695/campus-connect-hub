@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import mlritLogo from "@/assets/mlrit-logo.png";
 
@@ -7,6 +8,7 @@ const navItems = ["Home", "About", "Features", "Contact"];
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -45,7 +47,7 @@ const Navbar = () => {
             </button>
           ))}
           <button
-            onClick={() => handleNav("Contact")}
+            onClick={() => navigate("/login")}
             className="bg-primary text-primary-foreground px-5 py-2 rounded-full text-sm font-medium transition-all hover:shadow-lg active:scale-95"
           >
             Login
@@ -71,7 +73,7 @@ const Navbar = () => {
             </button>
           ))}
           <button
-            onClick={() => handleNav("Contact")}
+            onClick={() => { setMobileOpen(false); navigate("/login"); }}
             className="w-full bg-primary text-primary-foreground px-5 py-2 rounded-full text-sm font-medium"
           >
             Login
