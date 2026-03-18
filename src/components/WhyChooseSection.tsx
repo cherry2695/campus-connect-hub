@@ -13,7 +13,7 @@ const WhyChooseSection = () => (
       <div className="text-center max-w-2xl mx-auto mb-16">
         <p className="text-xs font-semibold uppercase tracking-widest text-primary mb-3">Why Campus Connect</p>
         <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground" style={{ textWrap: "balance" as any }}>
-          Built for MLRIT, by MLRIT
+          Built for MLRIT, by Chanikya
         </h2>
       </div>
 

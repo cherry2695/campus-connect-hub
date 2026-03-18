@@ -5,11 +5,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import slide1 from "@/assets/slide-1.jpeg";
 import slide2 from "@/assets/slide-2.jpg";
 import slide3 from "@/assets/slide-3.png";
-import slide4 from "@/assets/slide-4.png";
-import slide5 from "@/assets/slide-5.png";
 import slide6 from "@/assets/slide-6.png";
 
-const slides = [slide1, slide2, slide3, slide4, slide5, slide6];
+const slides = [slide1, slide2, slide3, slide6];
 
 const HeroCarousel = () => {
   const [index, setIndex] = useState(0);
@@ -42,6 +40,8 @@ const HeroCarousel = () => {
           src={slides[index]}
           alt={`Campus slide ${index + 1}`}
           className="absolute inset-0 w-full h-full object-cover"
+          loading="eager"
+          decoding="async"
           custom={direction}
           initial={{ opacity: 0, x: direction * 60 }}
           animate={{ opacity: 1, x: 0 }}

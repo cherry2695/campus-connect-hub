@@ -31,7 +31,7 @@ const Footer = () => {
           <div>
             <h4 className="text-sm font-semibold text-background mb-4 uppercase tracking-widest">Connect</h4>
             <div className="flex gap-4 text-sm">
-              <span className="hover:text-background transition-colors cursor-pointer">Instagram</span>
+              <a href="https://www.instagram.com/mlritofficial/" target="_blank" rel="noopener noreferrer" className="hover:text-background transition-colors">Instagram</a>
               <span className="hover:text-background transition-colors cursor-pointer">LinkedIn</span>
               <span className="hover:text-background transition-colors cursor-pointer">Twitter</span>
             </div>
