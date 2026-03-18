@@ -119,7 +119,7 @@ const Login: React.FC = () => {
       <div className="relative z-10 p-4 sm:p-6">
         <button
           onClick={handleBack}
-          className="flex items-center gap-2 text-white/70 hover:text-white transition-colors text-sm font-medium group"
+          className="flex items-center gap-2 text-foreground/60 hover:text-foreground transition-colors text-sm font-medium group"
         >
           <ArrowLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform" />
           Back
@@ -135,15 +135,14 @@ const Login: React.FC = () => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="w-full max-w-md backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-10 text-center shadow-2xl"
+              className="w-full max-w-md backdrop-blur-sm bg-card/80 border border-border rounded-2xl p-10 text-center shadow-[var(--shadow-hover)]"
             >
-              <CheckCircle2 className="h-16 w-16 text-green-400 mx-auto mb-4" />
-              <h2 className="text-xl font-semibold text-white">
+              <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto mb-4" />
+              <h2 className="text-xl font-semibold text-foreground">
                 Login successful! Redirecting to your portal...
               </h2>
             </motion.div>
           ) : !selectedRole ? (
-            /* Role selection cards */
             <motion.div
               key="roles"
               initial={{ opacity: 0, y: 20 }}
@@ -154,8 +153,8 @@ const Login: React.FC = () => {
             >
               <div className="text-center mb-10">
                 <img src={mlritLogo} alt="MLRIT Logo" className="h-16 w-16 mx-auto mb-4 drop-shadow-lg" />
-                <h1 className="text-3xl font-bold text-white">Campus Connect Login</h1>
-                <p className="text-white/60 mt-2">Select your role to continue</p>
+                <h1 className="text-3xl font-bold text-foreground">Campus Connect Login</h1>
+                <p className="text-muted-foreground mt-2">Select your role to continue</p>
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -168,19 +167,18 @@ const Login: React.FC = () => {
                     whileHover={{ y: -6, scale: 1.03 }}
                     whileTap={{ scale: 0.97 }}
                     onClick={() => setSelectedRole(role.key)}
-                    className="group relative backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-6 flex flex-col items-center gap-3 text-center transition-all duration-300 hover:bg-white/20 hover:border-white/30 hover:shadow-[0_8px_32px_rgba(59,130,246,0.25)] cursor-pointer"
+                    className="group relative backdrop-blur-sm bg-card/80 border border-border rounded-2xl p-6 flex flex-col items-center gap-3 text-center transition-all duration-300 hover:shadow-[0_8px_32px_rgba(59,130,246,0.15)] hover:border-primary/30 cursor-pointer"
                   >
-                    <div className="p-3 rounded-xl bg-primary/20 text-primary-foreground group-hover:bg-primary/40 transition-colors">
+                    <div className="p-3 rounded-xl bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors">
                       {role.icon}
                     </div>
-                    <h3 className="text-white font-semibold text-lg">{role.label}</h3>
-                    <p className="text-white/50 text-xs leading-relaxed hidden sm:block">{role.desc}</p>
+                    <h3 className="text-foreground font-semibold text-lg">{role.label}</h3>
+                    <p className="text-muted-foreground text-xs leading-relaxed hidden sm:block">{role.desc}</p>
                   </motion.button>
                 ))}
               </div>
             </motion.div>
           ) : (
-            /* Login form */
             <motion.div
               key="form"
               initial={{ opacity: 0, x: 60, rotateY: -15 }}
@@ -190,25 +188,25 @@ const Login: React.FC = () => {
               className="w-full max-w-md"
               style={{ perspective: 1000 }}
             >
-              <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-8 shadow-2xl">
+              <div className="backdrop-blur-sm bg-card/80 border border-border rounded-2xl p-8 shadow-[var(--shadow-hover)]">
                 <div className="flex flex-col items-center gap-3 mb-8">
-                  <div className="p-3 rounded-xl bg-primary/20">
+                  <div className="p-3 rounded-xl bg-primary/10">
                     {ROLES.find((r) => r.key === selectedRole)?.icon &&
                       React.cloneElement(ROLES.find((r) => r.key === selectedRole)!.icon as React.ReactElement, {
-                        className: "h-8 w-8 text-blue-300",
+                        className: "h-8 w-8 text-primary",
                       })}
                   </div>
                   <div className="text-center">
-                    <h2 className="text-2xl font-bold text-white">
+                    <h2 className="text-2xl font-bold text-foreground">
                       {ROLES.find((r) => r.key === selectedRole)?.label} Login
                     </h2>
-                    <p className="text-white/50 text-sm mt-1">Access your portal securely</p>
+                    <p className="text-muted-foreground text-sm mt-1">Access your portal securely</p>
                   </div>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div className="space-y-2">
-                    <Label htmlFor="email" className="text-white/80">Email</Label>
+                    <Label htmlFor="email">Email</Label>
                     <Input
                       id="email"
                       type="email"
@@ -216,13 +214,13 @@ const Login: React.FC = () => {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       onBlur={() => setTouched({ email: true })}
-                      className={`bg-white/10 border-white/20 text-white placeholder:text-white/30 focus-visible:ring-primary/50 focus-visible:border-white/40 ${emailError ? "border-red-400 focus-visible:ring-red-400/50" : ""}`}
+                      className={emailError ? "border-destructive focus-visible:ring-destructive" : ""}
                     />
-                    {emailError && <p className="text-sm text-red-400">{emailError}</p>}
+                    {emailError && <p className="text-sm text-destructive">{emailError}</p>}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="password" className="text-white/80">Password</Label>
+                    <Label htmlFor="password">Password</Label>
                     <div className="relative">
                       <Input
                         id="password"
@@ -230,23 +228,23 @@ const Login: React.FC = () => {
                         placeholder="Enter your password"
                         value={password}
                         onChange={(e) => { setPassword(e.target.value); setPasswordError(""); }}
-                        className={`bg-white/10 border-white/20 text-white placeholder:text-white/30 pr-10 focus-visible:ring-primary/50 focus-visible:border-white/40 ${passwordError ? "border-red-400 focus-visible:ring-red-400/50" : ""}`}
+                        className={`pr-10 ${passwordError ? "border-destructive focus-visible:ring-destructive" : ""}`}
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/80 transition-colors"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                         tabIndex={-1}
                       >
                         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
                     </div>
-                    {passwordError && <p className="text-sm text-red-400">{passwordError}</p>}
+                    {passwordError && <p className="text-sm text-destructive">{passwordError}</p>}
                   </div>
 
                   <Button
                     type="submit"
-                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/25"
+                    className="w-full shadow-lg shadow-primary/20"
                     size="lg"
                     disabled={!isFormValid || loading}
                   >
@@ -266,7 +264,7 @@ const Login: React.FC = () => {
         </AnimatePresence>
       </div>
 
-      <footer className="relative z-10 py-4 text-center text-sm text-white/30">
+      <footer className="relative z-10 py-4 text-center text-sm text-muted-foreground">
         © 2026 MLRIT Campus Connect
       </footer>
     </div>
