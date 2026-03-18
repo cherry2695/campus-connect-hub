@@ -40,6 +40,8 @@ const HeroCarousel = () => {
           src={slides[index]}
           alt={`Campus slide ${index + 1}`}
           className="absolute inset-0 w-full h-full object-cover"
+          loading="eager"
+          decoding="async"
           custom={direction}
           initial={{ opacity: 0, x: direction * 60 }}
           animate={{ opacity: 1, x: 0 }}
