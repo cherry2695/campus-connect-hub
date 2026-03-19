@@ -112,13 +112,13 @@ const HeroSlider: React.FC = () => {
   };
 
   return (
-    <section className="relative w-full aspect-[21/9] max-h-[420px] overflow-hidden rounded-2xl bg-gray-100">
+    <section className="relative w-full aspect-[2/1] max-h-[480px] overflow-hidden rounded-2xl bg-gray-900">
       <AnimatePresence mode="wait" custom={direction}>
         <motion.img
           key={index}
           src={heroSlides[index]}
           alt={`Event ${index + 1}`}
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-contain bg-black"
           custom={direction}
           initial={{ opacity: 0, x: direction * 40 }}
           animate={{ opacity: 1, x: 0 }}
