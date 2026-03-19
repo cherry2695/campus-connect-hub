@@ -17,8 +17,15 @@ import workshopCarnival from "@/assets/events/workshop-carnival.png";
 import zenith from "@/assets/events/zenith.jpg";
 import zignasa from "@/assets/events/zignasa.jpeg";
 
+// 8x4 banner slides
+import slideB2b from "@/assets/slides/b2b.png";
+import slideEquinox from "@/assets/slides/equinox.png";
+import slideWorkshop from "@/assets/slides/workshop-carnival.jpg";
+import slideZignasa from "@/assets/slides/zignasa.png";
+import slideMetaLoop from "@/assets/slides/meta-loop.jpg";
+
 // ---------- DATA ----------
-const heroSlides = [ecstacy, equinox, innovation, workshopCarnival, zenith, zignasa];
+const heroSlides = [slideB2b, slideEquinox, slideWorkshop, slideZignasa, slideMetaLoop];
 
 interface EventData {
   id: string;
