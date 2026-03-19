@@ -68,8 +68,8 @@ const DashboardNavbar: React.FC<{ onProfileClick: () => void; onLogout: () => vo
   <nav className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
       <div className="flex items-center gap-3">
-        <img src={mlritLogo} alt="MLRIT" className="h-10 w-auto object-contain" />
-        <span className="font-bold text-lg text-gray-800 hidden sm:block">Campus Connect</span>
+        <img src={mlritLogo} alt="MLRIT" className="h-7 w-auto object-contain" />
+        <span className="font-bold text-lg text-blue-600 hidden sm:block">Campus Connect</span>
       </div>
       <div className="flex items-center gap-1">
         {(["home", "bookings", "past"] as Tab[]).map(tab => (
@@ -112,13 +112,13 @@ const HeroSlider: React.FC = () => {
   };
 
   return (
-    <section className="relative w-full aspect-[2/1] max-h-[480px] overflow-hidden rounded-2xl bg-gray-900">
+    <section className="relative w-full aspect-[2/1] max-h-[480px] overflow-hidden rounded-2xl">
       <AnimatePresence mode="wait" custom={direction}>
         <motion.img
           key={index}
           src={heroSlides[index]}
           alt={`Event ${index + 1}`}
-          className="absolute inset-0 w-full h-full object-contain bg-black"
+          className="absolute inset-0 w-full h-full object-cover"
           custom={direction}
           initial={{ opacity: 0, x: direction * 40 }}
           animate={{ opacity: 1, x: 0 }}
