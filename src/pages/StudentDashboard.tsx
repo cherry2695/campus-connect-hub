@@ -17,8 +17,15 @@ import workshopCarnival from "@/assets/events/workshop-carnival.png";
 import zenith from "@/assets/events/zenith.jpg";
 import zignasa from "@/assets/events/zignasa.jpeg";
 
+// 8x4 banner slides
+import slideB2b from "@/assets/slides/b2b.png";
+import slideEquinox from "@/assets/slides/equinox.png";
+import slideWorkshop from "@/assets/slides/workshop-carnival.jpg";
+import slideZignasa from "@/assets/slides/zignasa.png";
+import slideMetaLoop from "@/assets/slides/meta-loop.jpg";
+
 // ---------- DATA ----------
-const heroSlides = [ecstacy, equinox, innovation, workshopCarnival, zenith, zignasa];
+const heroSlides = [slideB2b, slideEquinox, slideWorkshop, slideZignasa, slideMetaLoop];
 
 interface EventData {
   id: string;
@@ -31,14 +38,14 @@ interface EventData {
 }
 
 const EVENTS: EventData[] = [
-  { id: "1", title: "Ecstacy 2025", description: "Rock On and Rave Off – Annual music & cultural fest by CAME Club", date: "26 Apr 2025", time: "5:30 PM", image: ecstacy, status: "live" },
-  { id: "2", title: "Workshop Carnival", description: "Create. Innovate. Excel – Workshops on UI/UX, Web Dev, AI & more", date: "10-11 Apr 2025", time: "9:00 AM", image: workshopCarnival, status: "live" },
-  { id: "3", title: "Zenith 2025", description: "The Cloud Voyage – 2-Day Hackathon & AWS Community Day", date: "18-20 Dec 2025", time: "10:00 AM", image: zenith, status: "upcoming" },
-  { id: "4", title: "Zignasa 2025", description: "24HR National Level Hackathon – Domains: AI, Web Dev, UI/UX", date: "28-29 Nov 2025", time: "9:00 AM", image: zignasa, status: "upcoming" },
+  { id: "1", title: "Workshop Carnival", description: "Create. Innovate. Excel – Workshops on UI/UX, Web Dev, AI & more", date: "10-11 Apr 2025", time: "9:00 AM", image: workshopCarnival, status: "live" },
+  { id: "2", title: "Ecstacy 2025", description: "Rock On and Rave Off – Annual music & cultural fest by CAME Club", date: "26 Apr 2025", time: "5:30 PM", image: ecstacy, status: "past" },
+  { id: "3", title: "Zenith 2025", description: "The Cloud Voyage – 2-Day Hackathon & AWS Community Day", date: "18-20 Dec 2024", time: "10:00 AM", image: zenith, status: "past" },
+  { id: "4", title: "Zignasa 2025", description: "24HR National Level Hackathon – Domains: AI, Web Dev, UI/UX", date: "28-29 Nov 2024", time: "9:00 AM", image: zignasa, status: "past" },
   { id: "5", title: "Equinox E-Summit 2K24", description: "Where Passion Meets Perseverance – Startup Expo, Ideathon & more", date: "28-30 Nov 2024", time: "10:00 AM", image: equinox, status: "past" },
   { id: "6", title: "Innovation Challenge 2K25", description: "Project Expo with ₹18,000 prize pool in collaboration with S&H Dept", date: "25 Jan 2025", time: "9:00 AM", image: innovation, status: "past" },
-  { id: "7", title: "Kite Festival 2026", description: "Annual kite flying celebration at MLRIT Grounds", date: "10 Jan 2026", time: "2:00 PM", image: kiteFestival, status: "past" },
-  { id: "8", title: "Trishna 2K26", description: "21st Annual Day celebrations – Save the Date!", date: "13 Mar 2026", time: "5:00 PM", image: trishna, status: "past" },
+  { id: "7", title: "Kite Festival 2025", description: "Annual kite flying celebration at MLRIT Grounds", date: "10 Jan 2025", time: "2:00 PM", image: kiteFestival, status: "past" },
+  { id: "8", title: "Trishna 2K25", description: "21st Annual Day celebrations – Save the Date!", date: "13 Mar 2025", time: "5:00 PM", image: trishna, status: "past" },
 ];
 
 const CLUBS = [
@@ -105,13 +112,13 @@ const HeroSlider: React.FC = () => {
   };
 
   return (
-    <section className="relative w-full aspect-[21/9] max-h-[420px] overflow-hidden rounded-2xl bg-gray-100">
+    <section className="relative w-full aspect-[2/1] max-h-[480px] overflow-hidden rounded-2xl bg-gray-900">
       <AnimatePresence mode="wait" custom={direction}>
         <motion.img
           key={index}
           src={heroSlides[index]}
           alt={`Event ${index + 1}`}
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-contain bg-black"
           custom={direction}
           initial={{ opacity: 0, x: direction * 40 }}
           animate={{ opacity: 1, x: 0 }}
