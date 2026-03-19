@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { LogOut, User, Calendar, Clock, ChevronLeft, ChevronRight, X, CheckCircle2 } from "lucide-react";
+import { LogOut, User, Calendar, Clock, ChevronLeft, ChevronRight, X, CheckCircle2, QrCode } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import mlritLogo from "@/assets/mlrit-logo.png";
 
 import ecstacy from "@/assets/events/ecstacy.png";
 import equinox from "@/assets/events/equinox.jpeg";
@@ -24,6 +23,14 @@ import slideWorkshop from "@/assets/slides/workshop-carnival.jpg";
 import slideZignasa from "@/assets/slides/zignasa.png";
 import slideMetaLoop from "@/assets/slides/meta-loop.jpg";
 
+// Club logos
+import cieLogo from "@/assets/clubs/cie.png";
+import codeClubLogo from "@/assets/clubs/codeclub.png";
+import cameClubLogo from "@/assets/clubs/cameclub.png";
+import scopeClubLogo from "@/assets/clubs/scopeclub.png";
+import clubLiteratiLogo from "@/assets/clubs/clubliterati.png";
+import apexLogo from "@/assets/clubs/apex.png";
+
 // ---------- DATA ----------
 const heroSlides = [slideB2b, slideEquinox, slideWorkshop, slideZignasa, slideMetaLoop];
 
@@ -35,26 +42,27 @@ interface EventData {
   time: string;
   image: string;
   status: "live" | "upcoming" | "past";
+  fee: number;
 }
 
 const EVENTS: EventData[] = [
-  { id: "1", title: "Workshop Carnival", description: "Create. Innovate. Excel – Workshops on UI/UX, Web Dev, AI & more", date: "10-11 Apr 2025", time: "9:00 AM", image: workshopCarnival, status: "live" },
-  { id: "2", title: "Ecstacy 2025", description: "Rock On and Rave Off – Annual music & cultural fest by CAME Club", date: "26 Apr 2025", time: "5:30 PM", image: ecstacy, status: "past" },
-  { id: "3", title: "Zenith 2025", description: "The Cloud Voyage – 2-Day Hackathon & AWS Community Day", date: "18-20 Dec 2024", time: "10:00 AM", image: zenith, status: "past" },
-  { id: "4", title: "Zignasa 2025", description: "24HR National Level Hackathon – Domains: AI, Web Dev, UI/UX", date: "28-29 Nov 2024", time: "9:00 AM", image: zignasa, status: "past" },
-  { id: "5", title: "Equinox E-Summit 2K24", description: "Where Passion Meets Perseverance – Startup Expo, Ideathon & more", date: "28-30 Nov 2024", time: "10:00 AM", image: equinox, status: "past" },
-  { id: "6", title: "Innovation Challenge 2K25", description: "Project Expo with ₹18,000 prize pool in collaboration with S&H Dept", date: "25 Jan 2025", time: "9:00 AM", image: innovation, status: "past" },
-  { id: "7", title: "Kite Festival 2025", description: "Annual kite flying celebration at MLRIT Grounds", date: "10 Jan 2025", time: "2:00 PM", image: kiteFestival, status: "past" },
-  { id: "8", title: "Trishna 2K25", description: "21st Annual Day celebrations – Save the Date!", date: "13 Mar 2025", time: "5:00 PM", image: trishna, status: "past" },
+  { id: "1", title: "Workshop Carnival", description: "Create. Innovate. Excel – Workshops on UI/UX, Web Dev, AI & more", date: "10-11 Apr 2025", time: "9:00 AM", image: workshopCarnival, status: "live", fee: 200 },
+  { id: "2", title: "Ecstacy 2025", description: "Rock On and Rave Off – Annual music & cultural fest by CAME Club", date: "26 Apr 2025", time: "5:30 PM", image: ecstacy, status: "past", fee: 150 },
+  { id: "3", title: "Zenith 2025", description: "The Cloud Voyage – 2-Day Hackathon & AWS Community Day", date: "18-20 Dec 2024", time: "10:00 AM", image: zenith, status: "past", fee: 300 },
+  { id: "4", title: "Zignasa 2025", description: "24HR National Level Hackathon – Domains: AI, Web Dev, UI/UX", date: "28-29 Nov 2024", time: "9:00 AM", image: zignasa, status: "past", fee: 250 },
+  { id: "5", title: "Equinox E-Summit 2K24", description: "Where Passion Meets Perseverance – Startup Expo, Ideathon & more", date: "28-30 Nov 2024", time: "10:00 AM", image: equinox, status: "past", fee: 200 },
+  { id: "6", title: "Innovation Challenge 2K25", description: "Project Expo with ₹18,000 prize pool in collaboration with S&H Dept", date: "25 Jan 2025", time: "9:00 AM", image: innovation, status: "past", fee: 100 },
+  { id: "7", title: "Kite Festival 2025", description: "Annual kite flying celebration at MLRIT Grounds", date: "10 Jan 2025", time: "2:00 PM", image: kiteFestival, status: "past", fee: 50 },
+  { id: "8", title: "Trishna 2K25", description: "21st Annual Day celebrations – Save the Date!", date: "13 Mar 2025", time: "5:00 PM", image: trishna, status: "past", fee: 100 },
 ];
 
 const CLUBS = [
-  { id: "cie", name: "CIE", color: "hsl(220,80%,55%)" },
-  { id: "codeclub", name: "Code Club", color: "hsl(150,70%,40%)" },
-  { id: "cameclub", name: "CAME Club", color: "hsl(340,75%,55%)" },
-  { id: "scopeclub", name: "SCOPE Club", color: "hsl(260,65%,55%)" },
-  { id: "clubliterati", name: "Club Literati", color: "hsl(30,80%,50%)" },
-  { id: "apex", name: "APEX", color: "hsl(190,75%,45%)" },
+  { id: "cie", name: "CIE", logo: cieLogo },
+  { id: "codeclub", name: "Code Club", logo: codeClubLogo },
+  { id: "cameclub", name: "CAME Club", logo: cameClubLogo },
+  { id: "scopeclub", name: "SCOPE Club", logo: scopeClubLogo },
+  { id: "clubliterati", name: "Club Literati", logo: clubLiteratiLogo },
+  { id: "apex", name: "APEX", logo: apexLogo },
 ];
 
 const DEPARTMENTS = ["CSE", "CSM", "CSD", "IT", "CSIT", "ECE", "EEE", "MECH", "AERO"];
@@ -62,15 +70,32 @@ const YEARS = ["1st Year", "2nd Year", "3rd Year", "4th Year"];
 
 type Tab = "home" | "bookings" | "past";
 
+// ---------- TYPES ----------
+interface ProfileData {
+  name: string;
+  photo: string | null;
+  year: string;
+  department: string;
+  contact: string;
+  personalEmail: string;
+}
+
+interface RegistrationData {
+  studentName: string;
+  rollNo: string;
+  department: string;
+  year: string;
+  teamName: string;
+}
+
+type RegistrationStep = "form" | "payment" | "success";
+
 // ---------- COMPONENTS ----------
 
 const DashboardNavbar: React.FC<{ onProfileClick: () => void; onLogout: () => void; activeTab: Tab; setActiveTab: (t: Tab) => void }> = ({ onProfileClick, onLogout, activeTab, setActiveTab }) => (
   <nav className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
-      <div className="flex items-center gap-3">
-        <img src={mlritLogo} alt="MLRIT" className="h-7 w-auto object-contain" />
-        <span className="font-bold text-lg text-blue-600 hidden sm:block">Campus Connect</span>
-      </div>
+      <span className="font-bold text-xl text-blue-600">Campus Connect</span>
       <div className="flex items-center gap-1">
         {(["home", "bookings", "past"] as Tab[]).map(tab => (
           <button
@@ -168,7 +193,7 @@ const EventCard: React.FC<{ event: EventData; onRegister?: (e: EventData) => voi
       </div>
       {!isPast && onRegister && (
         <Button size="sm" className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs" onClick={() => onRegister(event)}>
-          Register
+          Register • ₹{event.fee}
         </Button>
       )}
     </div>
@@ -178,14 +203,13 @@ const EventCard: React.FC<{ event: EventData; onRegister?: (e: EventData) => voi
 const BrowseByClub: React.FC = () => (
   <section>
     <h2 className="text-xl font-bold text-gray-800 mb-4">Browse by Club</h2>
-    <div className="flex gap-5 overflow-x-auto pb-3 scrollbar-hide">
+    <div className="flex gap-6 overflow-x-auto pb-3 scrollbar-hide">
       {CLUBS.map(club => (
-        <motion.button key={club.id} whileHover={{ scale: 1.1 }}
+        <motion.button key={club.id} whileHover={{ scale: 1.15 }} transition={{ type: "spring", stiffness: 300, damping: 15 }}
           className="flex flex-col items-center gap-2 shrink-0 group"
         >
-          <div className="w-16 h-16 rounded-full bg-gray-50 border-2 border-gray-200 group-hover:border-blue-400 flex items-center justify-center transition-all duration-300 shadow-sm group-hover:shadow-md"
-            style={{ background: `linear-gradient(135deg, ${club.color}15, ${club.color}08)` }}>
-            <span className="text-lg font-bold" style={{ color: club.color }}>{club.name.charAt(0)}</span>
+          <div className="w-20 h-20 rounded-full border-2 border-gray-200 group-hover:border-blue-400 overflow-hidden transition-all duration-300 shadow-sm group-hover:shadow-lg">
+            <img src={club.logo} alt={club.name} className="w-full h-full object-cover" />
           </div>
           <span className="text-xs text-gray-500 group-hover:text-blue-600 font-medium transition-colors whitespace-nowrap">{club.name}</span>
         </motion.button>
@@ -194,43 +218,117 @@ const BrowseByClub: React.FC = () => (
   </section>
 );
 
-const RegisterModal: React.FC<{ event: EventData; onClose: () => void; onSubmit: (name: string, team: string) => void; profileName: string }> = ({ event, onClose, onSubmit, profileName }) => {
-  const [name, setName] = useState(profileName);
-  const [team, setTeam] = useState("");
+const RegisterModal: React.FC<{
+  event: EventData;
+  onClose: () => void;
+  onComplete: () => void;
+  profileName: string;
+  profileDept: string;
+  profileYear: string;
+}> = ({ event, onClose, onComplete, profileName, profileDept, profileYear }) => {
+  const [step, setStep] = useState<RegistrationStep>("form");
+  const [formData, setFormData] = useState<RegistrationData>({
+    studentName: profileName,
+    rollNo: "",
+    department: profileDept,
+    year: profileYear,
+    teamName: "",
+  });
+
+  const canSubmitForm = formData.studentName.trim() && formData.rollNo.trim() && formData.department && formData.year;
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4" onClick={onClose}>
       <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
         className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl" onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-bold text-gray-800">Register for {event.title}</h3>
-          <button onClick={onClose} className="p-1 rounded-full hover:bg-gray-100"><X className="h-5 w-5 text-gray-400" /></button>
-        </div>
-        <div className="space-y-4">
-          <div>
-            <Label>Student Name *</Label>
-            <Input value={name} onChange={e => setName(e.target.value)} placeholder="Your name" className="mt-1" />
-          </div>
-          <div>
-            <Label>Team Name (Optional)</Label>
-            <Input value={team} onChange={e => setTeam(e.target.value)} placeholder="Enter team name" className="mt-1" />
-          </div>
-          <Button className="w-full bg-blue-600 hover:bg-blue-700" disabled={!name.trim()} onClick={() => onSubmit(name, team)}>
-            Submit Registration
-          </Button>
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-};
 
-const SuccessToast: React.FC<{ message: string; onClose: () => void }> = ({ message, onClose }) => {
-  useEffect(() => { const t = setTimeout(onClose, 3000); return () => clearTimeout(t); }, [onClose]);
-  return (
-    <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 50 }}
-      className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-green-600 text-white px-6 py-3 rounded-xl shadow-lg flex items-center gap-2 text-sm font-medium">
-      <CheckCircle2 className="h-5 w-5" /> {message}
+        {step === "form" && (
+          <>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-gray-800">Register for {event.title}</h3>
+              <button onClick={onClose} className="p-1 rounded-full hover:bg-gray-100"><X className="h-5 w-5 text-gray-400" /></button>
+            </div>
+            <div className="space-y-3">
+              <div>
+                <Label>Student Name *</Label>
+                <Input value={formData.studentName} onChange={e => setFormData(d => ({ ...d, studentName: e.target.value }))} placeholder="Your name" className="mt-1" />
+              </div>
+              <div>
+                <Label>Roll Number *</Label>
+                <Input value={formData.rollNo} onChange={e => setFormData(d => ({ ...d, rollNo: e.target.value }))} placeholder="e.g. 22R11A0501" className="mt-1" />
+              </div>
+              <div>
+                <Label>Department *</Label>
+                <select value={formData.department} onChange={e => setFormData(d => ({ ...d, department: e.target.value }))}
+                  className="mt-1 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <option value="">Select Department</option>
+                  {DEPARTMENTS.map(d => <option key={d} value={d}>{d}</option>)}
+                </select>
+              </div>
+              <div>
+                <Label>Pursuing Year *</Label>
+                <select value={formData.year} onChange={e => setFormData(d => ({ ...d, year: e.target.value }))}
+                  className="mt-1 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <option value="">Select Year</option>
+                  {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
+                </select>
+              </div>
+              <div>
+                <Label>Team Name (Optional)</Label>
+                <Input value={formData.teamName} onChange={e => setFormData(d => ({ ...d, teamName: e.target.value }))} placeholder="Enter team name" className="mt-1" />
+              </div>
+              <Button className="w-full bg-blue-600 hover:bg-blue-700 mt-2" disabled={!canSubmitForm} onClick={() => setStep("payment")}>
+                Proceed to Payment • ₹{event.fee}
+              </Button>
+            </div>
+          </>
+        )}
+
+        {step === "payment" && (
+          <>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-gray-800">Payment</h3>
+              <button onClick={onClose} className="p-1 rounded-full hover:bg-gray-100"><X className="h-5 w-5 text-gray-400" /></button>
+            </div>
+            <div className="flex flex-col items-center py-6">
+              <p className="text-sm text-gray-500 mb-4">Scan the QR code to pay <span className="font-bold text-gray-800">₹{event.fee}</span></p>
+              <div className="w-48 h-48 bg-gray-100 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center mb-6">
+                <QrCode className="h-20 w-20 text-gray-400 mb-2" />
+                <span className="text-xs text-gray-400">Dummy QR Scanner</span>
+              </div>
+              <p className="text-xs text-gray-400 mb-1">Event: {event.title}</p>
+              <p className="text-xs text-gray-400 mb-6">Student: {formData.studentName} ({formData.rollNo})</p>
+              <Button className="w-full bg-green-600 hover:bg-green-700 text-white" onClick={() => setStep("success")}>
+                Payment Done
+              </Button>
+              <button onClick={() => setStep("form")} className="mt-3 text-sm text-gray-400 hover:text-gray-600 transition-colors">
+                ← Back to form
+              </button>
+            </div>
+          </>
+        )}
+
+        {step === "success" && (
+          <div className="flex flex-col items-center py-8">
+            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 200, damping: 12 }}>
+              <CheckCircle2 className="h-16 w-16 text-green-500 mb-4" />
+            </motion.div>
+            <h3 className="text-xl font-bold text-gray-800 mb-2">Payment Successful!</h3>
+            <p className="text-sm text-gray-500 text-center mb-6">
+              Successfully registered for <span className="font-semibold text-gray-700">{event.title}</span>
+            </p>
+            <div className="bg-green-50 border border-green-100 rounded-lg p-4 w-full text-sm space-y-1 mb-6">
+              <p><span className="text-gray-500">Name:</span> <span className="font-medium text-gray-700">{formData.studentName}</span></p>
+              <p><span className="text-gray-500">Roll No:</span> <span className="font-medium text-gray-700">{formData.rollNo}</span></p>
+              <p><span className="text-gray-500">Amount Paid:</span> <span className="font-medium text-green-600">₹{event.fee}</span></p>
+            </div>
+            <Button className="w-full bg-blue-600 hover:bg-blue-700" onClick={() => { onComplete(); onClose(); }}>
+              Done
+            </Button>
+          </div>
+        )}
+      </motion.div>
     </motion.div>
   );
 };
@@ -307,16 +405,6 @@ const ProfileModal: React.FC<{ profile: ProfileData; onSave: (p: ProfileData) =>
   );
 };
 
-// ---------- TYPES ----------
-interface ProfileData {
-  name: string;
-  photo: string | null;
-  year: string;
-  department: string;
-  contact: string;
-  personalEmail: string;
-}
-
 // ---------- MAIN ----------
 const StudentDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -330,10 +418,9 @@ const StudentDashboard: React.FC = () => {
   const liveEvents = EVENTS.filter(e => e.status === "live" || e.status === "upcoming");
   const pastEvents = EVENTS.filter(e => e.status === "past");
 
-  const handleRegister = (name: string, _team: string) => {
+  const handleRegistrationComplete = () => {
     if (registerEvent) {
       setRegisteredIds(prev => new Set(prev).add(registerEvent.id));
-      setRegisterEvent(null);
       setSuccessMsg(`Successfully registered for ${registerEvent.title}`);
     }
   };
@@ -419,12 +506,24 @@ const StudentDashboard: React.FC = () => {
       {/* Modals */}
       <AnimatePresence>
         {registerEvent && (
-          <RegisterModal event={registerEvent} onClose={() => setRegisterEvent(null)} onSubmit={handleRegister} profileName={profile.name} />
+          <RegisterModal
+            event={registerEvent}
+            onClose={() => setRegisterEvent(null)}
+            onComplete={handleRegistrationComplete}
+            profileName={profile.name}
+            profileDept={profile.department}
+            profileYear={profile.year}
+          />
         )}
         {showProfile && (
           <ProfileModal profile={profile} onSave={(p) => { setProfile(p); setShowProfile(false); setSuccessMsg("Profile saved successfully"); }} onClose={() => setShowProfile(false)} />
         )}
-        {successMsg && <SuccessToast message={successMsg} onClose={() => setSuccessMsg("")} />}
+        {successMsg && (
+          <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 50 }}
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-green-600 text-white px-6 py-3 rounded-xl shadow-lg flex items-center gap-2 text-sm font-medium">
+            <CheckCircle2 className="h-5 w-5" /> {successMsg}
+          </motion.div>
+        )}
       </AnimatePresence>
     </div>
   );
