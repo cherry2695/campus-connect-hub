@@ -139,7 +139,7 @@ const HeroSlider: React.FC = () => {
   };
 
   return (
-    <section className="relative w-full aspect-[2/1] max-h-[480px] overflow-hidden rounded-2xl">
+    <section className="relative w-full aspect-[3/1] max-h-[400px] overflow-hidden rounded-2xl">
       <AnimatePresence mode="wait" custom={direction}>
         <motion.img
           key={index}
