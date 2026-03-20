@@ -16,12 +16,14 @@ import workshopCarnival from "@/assets/events/workshop-carnival.png";
 import zenith from "@/assets/events/zenith.jpg";
 import zignasa from "@/assets/events/zignasa.jpeg";
 
-// 8x4 banner slides
+// Banner slides
 import slideB2b from "@/assets/slides/b2b.png";
 import slideEquinox from "@/assets/slides/equinox.png";
 import slideWorkshop from "@/assets/slides/workshop-carnival.jpg";
 import slideZignasa from "@/assets/slides/zignasa.png";
-import slideMetaLoop from "@/assets/slides/meta-loop.jpg";
+import slideMetaLoop from "@/assets/slides/meta-loop.png";
+import slideProjectExpo from "@/assets/slides/project-expo.png";
+import slideInnovation from "@/assets/slides/innovation-challenge.png";
 
 // Club logos
 import cieLogo from "@/assets/clubs/cie.png";
