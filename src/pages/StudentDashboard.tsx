@@ -34,7 +34,7 @@ import clubLiteratiLogo from "@/assets/clubs/clubliterati.png";
 import apexLogo from "@/assets/clubs/apex.png";
 
 // ---------- DATA ----------
-const heroSlides = [slideB2b, slideEquinox, slideWorkshop, slideZignasa, slideMetaLoop];
+const heroSlides = [slideB2b, slideEquinox, slideWorkshop, slideZignasa, slideMetaLoop, slideProjectExpo, slideInnovation];
 
 interface EventData {
   id: string;
