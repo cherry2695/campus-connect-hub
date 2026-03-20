@@ -495,7 +495,7 @@ const StudentDashboard: React.FC = () => {
             <div>
               <h3 className="text-lg font-semibold text-gray-700 mb-3">Past Events Attended</h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                {EVENTS.filter(e => ["1", "2", "4"].includes(e.id)).map(event => (
+                {EVENTS.filter(e => ["2", "3", "4"].includes(e.id)).map(event => (
                   <div key={event.id} className="bg-white rounded-xl border border-blue-100 p-4 shadow-sm">
                     <div className="flex items-center gap-2 mb-2">
                       <CheckCircle2 className="h-4 w-4 text-blue-500" />
