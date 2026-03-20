@@ -16,12 +16,14 @@ import workshopCarnival from "@/assets/events/workshop-carnival.png";
 import zenith from "@/assets/events/zenith.jpg";
 import zignasa from "@/assets/events/zignasa.jpeg";
 
-// 8x4 banner slides
+// Banner slides
 import slideB2b from "@/assets/slides/b2b.png";
 import slideEquinox from "@/assets/slides/equinox.png";
 import slideWorkshop from "@/assets/slides/workshop-carnival.jpg";
 import slideZignasa from "@/assets/slides/zignasa.png";
-import slideMetaLoop from "@/assets/slides/meta-loop.jpg";
+import slideMetaLoop from "@/assets/slides/meta-loop.png";
+import slideProjectExpo from "@/assets/slides/project-expo.png";
+import slideInnovation from "@/assets/slides/innovation-challenge.png";
 
 // Club logos
 import cieLogo from "@/assets/clubs/cie.png";
@@ -32,7 +34,7 @@ import clubLiteratiLogo from "@/assets/clubs/clubliterati.png";
 import apexLogo from "@/assets/clubs/apex.png";
 
 // ---------- DATA ----------
-const heroSlides = [slideB2b, slideEquinox, slideWorkshop, slideZignasa, slideMetaLoop];
+const heroSlides = [slideB2b, slideEquinox, slideWorkshop, slideZignasa, slideMetaLoop, slideProjectExpo, slideInnovation];
 
 interface EventData {
   id: string;
@@ -137,7 +139,7 @@ const HeroSlider: React.FC = () => {
   };
 
   return (
-    <section className="relative w-full aspect-[2/1] max-h-[480px] overflow-hidden rounded-2xl">
+    <section className="relative w-full aspect-[3/1] max-h-[400px] overflow-hidden rounded-2xl">
       <AnimatePresence mode="wait" custom={direction}>
         <motion.img
           key={index}
@@ -430,7 +432,7 @@ const StudentDashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50/80">
+    <div className="min-h-screen bg-gray-50/80 overflow-x-hidden">
       <DashboardNavbar onProfileClick={() => setShowProfile(true)} onLogout={handleLogout} activeTab={activeTab} setActiveTab={setActiveTab} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-8">
@@ -458,20 +460,22 @@ const StudentDashboard: React.FC = () => {
         )}
 
         {activeTab === "bookings" && (
-          <section>
-            <h2 className="text-xl font-bold text-gray-800 mb-4">Available Events</h2>
-            {liveEvents.length === 0 ? (
-              <p className="text-gray-400 text-center py-16">No events available right now.</p>
-            ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                {liveEvents.map(event => (
-                  <EventCard key={event.id} event={event}
-                    onRegister={registeredIds.has(event.id) ? undefined : setRegisterEvent} />
-                ))}
-              </div>
-            )}
+          <section className="space-y-8">
+            <div>
+              <h2 className="text-xl font-bold text-gray-800 mb-4">Available Events</h2>
+              {liveEvents.length === 0 ? (
+                <p className="text-gray-400 text-center py-16">No events available right now.</p>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {liveEvents.map(event => (
+                    <EventCard key={event.id} event={event}
+                      onRegister={registeredIds.has(event.id) ? undefined : setRegisterEvent} />
+                  ))}
+                </div>
+              )}
+            </div>
             {registeredIds.size > 0 && (
-              <div className="mt-8">
+              <div>
                 <h3 className="text-lg font-semibold text-gray-700 mb-3">Your Registrations</h3>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                   {EVENTS.filter(e => registeredIds.has(e.id)).map(event => (
@@ -486,6 +490,23 @@ const StudentDashboard: React.FC = () => {
                 </div>
               </div>
             )}
+
+            {/* Past Events Attended */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-700 mb-3">Past Events Attended</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                {EVENTS.filter(e => ["2", "3", "4"].includes(e.id)).map(event => (
+                  <div key={event.id} className="bg-white rounded-xl border border-blue-100 p-4 shadow-sm">
+                    <div className="flex items-center gap-2 mb-2">
+                      <CheckCircle2 className="h-4 w-4 text-blue-500" />
+                      <span className="font-medium text-sm text-gray-800">{event.title}</span>
+                    </div>
+                    <p className="text-xs text-gray-400">{event.date} • {event.time}</p>
+                    <Badge variant="secondary" className="mt-2 bg-blue-50 text-blue-600 text-[10px]">Attended</Badge>
+                  </div>
+                ))}
+              </div>
+            </div>
           </section>
         )}
 
