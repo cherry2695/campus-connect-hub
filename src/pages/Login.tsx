@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { supabase } from "@/integrations/supabase/client";
 import mlritLogo from "@/assets/mlrit-logo.png";
 import loginBg from "@/assets/login-bg.png";
 
@@ -81,7 +82,28 @@ const Login: React.FC = () => {
       return;
     }
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 1500));
+
+    const trimmedEmail = email.trim().toLowerCase();
+
+    // Try to sign in first
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: trimmedEmail,
+      password: STATIC_PASSWORD,
+    });
+
+    if (signInError) {
+      // If user doesn't exist, sign up
+      const { error: signUpError } = await supabase.auth.signUp({
+        email: trimmedEmail,
+        password: STATIC_PASSWORD,
+      });
+      if (signUpError) {
+        setPasswordError(signUpError.message);
+        setLoading(false);
+        return;
+      }
+    }
+
     setLoading(false);
     setSuccess(true);
     if (selectedRole === "student") {
@@ -97,13 +119,11 @@ const Login: React.FC = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden flex flex-col">
-      {/* Background image */}
       <div
         className="fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${loginBg})` }}
       />
 
-      {/* Back button */}
       <div className="relative z-10 p-4 sm:p-6">
         <button
           onClick={handleBack}
@@ -114,7 +134,6 @@ const Login: React.FC = () => {
         </button>
       </div>
 
-      {/* Main content */}
       <div className="flex-1 flex items-center justify-center px-4 pb-8">
         <AnimatePresence mode="wait">
           {success ? (

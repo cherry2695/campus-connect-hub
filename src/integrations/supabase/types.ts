@@ -14,7 +14,81 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      event_registrations: {
+        Row: {
+          amount_paid: number
+          created_at: string
+          department: string
+          event_id: string
+          id: string
+          roll_no: string
+          student_name: string
+          team_name: string | null
+          user_id: string
+          year: string
+        }
+        Insert: {
+          amount_paid?: number
+          created_at?: string
+          department: string
+          event_id: string
+          id?: string
+          roll_no: string
+          student_name: string
+          team_name?: string | null
+          user_id: string
+          year: string
+        }
+        Update: {
+          amount_paid?: number
+          created_at?: string
+          department?: string
+          event_id?: string
+          id?: string
+          roll_no?: string
+          student_name?: string
+          team_name?: string | null
+          user_id?: string
+          year?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          contact: string
+          created_at: string
+          department: string
+          id: string
+          name: string
+          personal_email: string
+          updated_at: string
+          year: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          contact?: string
+          created_at?: string
+          department?: string
+          id: string
+          name?: string
+          personal_email?: string
+          updated_at?: string
+          year?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          contact?: string
+          created_at?: string
+          department?: string
+          id?: string
+          name?: string
+          personal_email?: string
+          updated_at?: string
+          year?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
