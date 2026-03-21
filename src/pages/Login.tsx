@@ -108,6 +108,8 @@ const Login: React.FC = () => {
     setSuccess(true);
     if (selectedRole === "student") {
       setTimeout(() => navigate("/student-dashboard"), 1500);
+    } else if (selectedRole === "club") {
+      setTimeout(() => navigate("/club-portal"), 1500);
     }
   };
 
