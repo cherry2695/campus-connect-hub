@@ -14,6 +14,154 @@ export type Database = {
   }
   public: {
     Tables: {
+      club_events: {
+        Row: {
+          amount: number
+          banner_image_url: string | null
+          club_id: string
+          created_at: string
+          description: string | null
+          end_datetime: string
+          event_mode: string
+          event_name: string
+          event_type: string
+          id: string
+          instagram_link: string | null
+          keywords: string | null
+          pricing_type: string
+          short_name: string | null
+          start_datetime: string
+          status: string
+          updated_at: string
+          venue: string | null
+          venue_details: string | null
+          website_url: string | null
+        }
+        Insert: {
+          amount?: number
+          banner_image_url?: string | null
+          club_id: string
+          created_at?: string
+          description?: string | null
+          end_datetime: string
+          event_mode?: string
+          event_name: string
+          event_type?: string
+          id?: string
+          instagram_link?: string | null
+          keywords?: string | null
+          pricing_type?: string
+          short_name?: string | null
+          start_datetime: string
+          status?: string
+          updated_at?: string
+          venue?: string | null
+          venue_details?: string | null
+          website_url?: string | null
+        }
+        Update: {
+          amount?: number
+          banner_image_url?: string | null
+          club_id?: string
+          created_at?: string
+          description?: string | null
+          end_datetime?: string
+          event_mode?: string
+          event_name?: string
+          event_type?: string
+          id?: string
+          instagram_link?: string | null
+          keywords?: string | null
+          pricing_type?: string
+          short_name?: string | null
+          start_datetime?: string
+          status?: string
+          updated_at?: string
+          venue?: string | null
+          venue_details?: string | null
+          website_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "club_events_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      club_registrations: {
+        Row: {
+          department: string | null
+          event_id: string
+          id: string
+          registration_date: string
+          roll_no: string | null
+          student_email: string | null
+          student_name: string
+          team_name: string | null
+          user_id: string | null
+          year: string | null
+        }
+        Insert: {
+          department?: string | null
+          event_id: string
+          id?: string
+          registration_date?: string
+          roll_no?: string | null
+          student_email?: string | null
+          student_name: string
+          team_name?: string | null
+          user_id?: string | null
+          year?: string | null
+        }
+        Update: {
+          department?: string | null
+          event_id?: string
+          id?: string
+          registration_date?: string
+          roll_no?: string | null
+          student_email?: string | null
+          student_name?: string
+          team_name?: string | null
+          user_id?: string | null
+          year?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "club_registrations_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "club_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clubs: {
+        Row: {
+          club_name: string
+          created_at: string
+          email: string
+          id: string
+          instagram_url: string | null
+        }
+        Insert: {
+          club_name: string
+          created_at?: string
+          email: string
+          id?: string
+          instagram_url?: string | null
+        }
+        Update: {
+          club_name?: string
+          created_at?: string
+          email?: string
+          id?: string
+          instagram_url?: string | null
+        }
+        Relationships: []
+      }
       event_registrations: {
         Row: {
           amount_paid: number
