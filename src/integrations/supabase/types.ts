@@ -201,6 +201,128 @@ export type Database = {
         }
         Relationships: []
       }
+      faculty_profiles: {
+        Row: {
+          avatar_url: string | null
+          contact: string
+          created_at: string
+          department: string
+          email: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          contact?: string
+          created_at?: string
+          department?: string
+          email?: string
+          id: string
+          name?: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          contact?: string
+          created_at?: string
+          department?: string
+          email?: string
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      faculty_programs: {
+        Row: {
+          banner_image_url: string | null
+          created_at: string
+          description: string | null
+          end_datetime: string
+          id: string
+          mode: string
+          program_type: string
+          short_description: string | null
+          start_datetime: string
+          status: string
+          title: string
+          venue: string | null
+        }
+        Insert: {
+          banner_image_url?: string | null
+          created_at?: string
+          description?: string | null
+          end_datetime: string
+          id?: string
+          mode?: string
+          program_type?: string
+          short_description?: string | null
+          start_datetime: string
+          status?: string
+          title: string
+          venue?: string | null
+        }
+        Update: {
+          banner_image_url?: string | null
+          created_at?: string
+          description?: string | null
+          end_datetime?: string
+          id?: string
+          mode?: string
+          program_type?: string
+          short_description?: string | null
+          start_datetime?: string
+          status?: string
+          title?: string
+          venue?: string | null
+        }
+        Relationships: []
+      }
+      faculty_registrations: {
+        Row: {
+          contact: string
+          department: string
+          email: string
+          faculty_id: string
+          faculty_name: string
+          id: string
+          organization_role: string | null
+          program_id: string
+          registered_at: string
+        }
+        Insert: {
+          contact?: string
+          department?: string
+          email?: string
+          faculty_id: string
+          faculty_name: string
+          id?: string
+          organization_role?: string | null
+          program_id: string
+          registered_at?: string
+        }
+        Update: {
+          contact?: string
+          department?: string
+          email?: string
+          faculty_id?: string
+          faculty_name?: string
+          id?: string
+          organization_role?: string | null
+          program_id?: string
+          registered_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "faculty_registrations_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "faculty_programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
