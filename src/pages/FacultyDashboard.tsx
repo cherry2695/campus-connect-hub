@@ -232,24 +232,25 @@ export default function FacultyDashboard() {
       </nav>
 
       {/* Hero Slider */}
-      <div className="relative w-full overflow-hidden bg-gray-900" style={{ aspectRatio: "3/1", maxHeight: 400 }}>
+      <section className="relative w-full overflow-hidden bg-gray-900 max-w-7xl mx-auto mt-4 rounded-2xl" style={{ aspectRatio: "16 / 5" }}>
         <AnimatePresence mode="wait">
           <motion.img
             key={slideIndex}
             src={SLIDES[slideIndex].src}
             alt={SLIDES[slideIndex].alt}
-            className="absolute inset-0 w-full h-full object-cover"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.6 }}
+            className="absolute inset-0 w-full h-full object-cover object-center"
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -40 }}
+            transition={{ duration: 0.5 }}
           />
         </AnimatePresence>
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
-          <div className="max-w-7xl mx-auto w-full px-6 pb-8">
-            <h2 className="text-white text-xl sm:text-3xl font-bold drop-shadow-lg">
+          <div className="w-full px-6 pb-6 sm:pb-8">
+            <h2 className="text-white text-lg sm:text-2xl md:text-3xl font-bold drop-shadow-lg">
               Explore Faculty Programs & Development Opportunities
             </h2>
+            <p className="text-white/70 text-sm mt-1">Stay updated with the latest happenings</p>
           </div>
         </div>
         <button
@@ -273,7 +274,7 @@ export default function FacultyDashboard() {
             />
           ))}
         </div>
-      </div>
+      </section>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-10">
         {/* Featured Programs */}

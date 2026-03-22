@@ -60,37 +60,49 @@ export default function PastEvents({ club }: Props) {
     }
     setSaving(true);
 
-    let banner_image_url = "";
-    if (bannerFile) {
-      const ext = bannerFile.name.split(".").pop();
-      const path = `${club.id}/${Date.now()}.${ext}`;
-      const { error: uploadErr } = await supabase.storage.from("event-banners").upload(path, bannerFile);
-      if (!uploadErr) {
+    try {
+      let banner_image_url = "";
+      if (bannerFile) {
+        const ext = bannerFile.name.split(".").pop();
+        const path = `${club.id}/${Date.now()}.${ext}`;
+        const { error: uploadErr } = await supabase.storage.from("event-banners").upload(path, bannerFile, { upsert: true });
+        if (uploadErr) {
+          console.error("Upload error:", uploadErr);
+          toast({ title: "Image upload failed", description: uploadErr.message, variant: "destructive" });
+          setSaving(false);
+          return;
+        }
         const { data: urlData } = supabase.storage.from("event-banners").getPublicUrl(path);
         banner_image_url = urlData.publicUrl;
       }
-    }
 
-    const { error } = await supabase.from("club_events").insert({
-      club_id: club.id,
-      event_name: form.event_name,
-      short_name: "",
-      start_datetime: form.start_datetime,
-      end_datetime: form.end_datetime || form.start_datetime,
-      description: form.description,
-      instagram_link: form.instagram_link,
-      banner_image_url,
-      status: "completed",
-    });
+      const { error } = await supabase.from("club_events").insert({
+        club_id: club.id,
+        event_name: form.event_name,
+        short_name: form.event_name.substring(0, 20),
+        start_datetime: new Date(form.start_datetime).toISOString(),
+        end_datetime: form.end_datetime ? new Date(form.end_datetime).toISOString() : new Date(form.start_datetime).toISOString(),
+        description: form.description,
+        instagram_link: form.instagram_link,
+        banner_image_url,
+        status: "completed",
+      });
 
-    setSaving(false);
-    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-    else {
-      toast({ title: "Past event added!" });
-      setShowForm(false);
-      setForm({ event_name: "", start_datetime: "", end_datetime: "", description: "", instagram_link: "" });
-      setBannerFile(null);
-      fetchEvents();
+      if (error) {
+        console.error("Insert error:", error);
+        toast({ title: "Error adding event", description: error.message, variant: "destructive" });
+      } else {
+        toast({ title: "Past event added!" });
+        setShowForm(false);
+        setForm({ event_name: "", start_datetime: "", end_datetime: "", description: "", instagram_link: "" });
+        setBannerFile(null);
+        fetchEvents();
+      }
+    } catch (err: any) {
+      console.error("Unexpected error:", err);
+      toast({ title: "Something went wrong", description: err?.message || "Please try again", variant: "destructive" });
+    } finally {
+      setSaving(false);
     }
   };
 
