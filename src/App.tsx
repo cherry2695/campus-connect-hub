@@ -7,6 +7,7 @@ import Index from "./pages/Index.tsx";
 import Login from "./pages/Login.tsx";
 import StudentDashboard from "./pages/StudentDashboard.tsx";
 import ClubPortal from "./pages/ClubPortal.tsx";
+import FacultyDashboard from "./pages/FacultyDashboard.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
