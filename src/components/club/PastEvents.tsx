@@ -26,9 +26,6 @@ interface ClubEvent {
   status: string;
 }
 
-const INSTAGRAM_POST_WIDTH = 1080;
-const INSTAGRAM_POST_HEIGHT = 1350;
-
 const toEventIsoString = (value: string) => {
   if (!value) return "";
   const normalizedValue = value.includes("T") ? value : `${value}T12:00:00`;
@@ -37,64 +34,6 @@ const toEventIsoString = (value: string) => {
     throw new Error("Please select a valid event date");
   }
   return parsedDate.toISOString();
-};
-
-const formatInstagramBanner = async (file: File) => {
-  if (typeof window === "undefined") return file;
-
-  return new Promise<File>((resolve, reject) => {
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      const image = new Image();
-
-      image.onload = () => {
-        const canvas = document.createElement("canvas");
-        canvas.width = INSTAGRAM_POST_WIDTH;
-        canvas.height = INSTAGRAM_POST_HEIGHT;
-
-        const context = canvas.getContext("2d");
-        if (!context) {
-          resolve(file);
-          return;
-        }
-
-        context.fillStyle = "#ffffff";
-        context.fillRect(0, 0, INSTAGRAM_POST_WIDTH, INSTAGRAM_POST_HEIGHT);
-
-        const scale = Math.max(
-          INSTAGRAM_POST_WIDTH / image.width,
-          INSTAGRAM_POST_HEIGHT / image.height,
-        );
-        const drawWidth = image.width * scale;
-        const drawHeight = image.height * scale;
-        const offsetX = (INSTAGRAM_POST_WIDTH - drawWidth) / 2;
-        const offsetY = (INSTAGRAM_POST_HEIGHT - drawHeight) / 2;
-
-        context.drawImage(image, offsetX, offsetY, drawWidth, drawHeight);
-
-        canvas.toBlob(
-          (blob) => {
-            if (!blob) {
-              reject(new Error("Failed to prepare event image"));
-              return;
-            }
-
-            const normalizedName = file.name.replace(/\.[^.]+$/, "") || "event-banner";
-            resolve(new File([blob], `${normalizedName}.jpg`, { type: "image/jpeg" }));
-          },
-          "image/jpeg",
-          0.9,
-        );
-      };
-
-      image.onerror = () => reject(new Error("Please upload a valid image file"));
-      image.src = typeof reader.result === "string" ? reader.result : "";
-    };
-
-    reader.onerror = () => reject(new Error("Unable to read the selected image"));
-    reader.readAsDataURL(file);
-  });
 };
 
 export default function PastEvents({ club }: Props) {
@@ -151,11 +90,13 @@ export default function PastEvents({ club }: Props) {
       let banner_image_url = "";
 
       if (bannerFile) {
-        const path = `${club.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`;
-        const uploadFile = bannerFile.type === "image/jpeg" ? bannerFile : await formatInstagramBanner(bannerFile);
+        const fileExtension = bannerFile.name.split(".").pop()?.toLowerCase() || "png";
+        const safeExtension = ["jpg", "jpeg", "png", "webp"].includes(fileExtension) ? fileExtension : "png";
+        const contentType = bannerFile.type || `image/${safeExtension === "jpg" ? "jpeg" : safeExtension}`;
+        const path = `${club.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${safeExtension}`;
         const { error: uploadErr } = await supabase.storage.from("event-banners").upload(path, uploadFile, {
           upsert: true,
-          contentType: "image/jpeg",
+          contentType,
         });
 
         if (uploadErr) {
