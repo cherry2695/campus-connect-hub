@@ -94,7 +94,7 @@ export default function PastEvents({ club }: Props) {
         const safeExtension = ["jpg", "jpeg", "png", "webp"].includes(fileExtension) ? fileExtension : "png";
         const contentType = bannerFile.type || `image/${safeExtension === "jpg" ? "jpeg" : safeExtension}`;
         const path = `${club.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${safeExtension}`;
-        const { error: uploadErr } = await supabase.storage.from("event-banners").upload(path, uploadFile, {
+        const { error: uploadErr } = await supabase.storage.from("event-banners").upload(path, bannerFile, {
           upsert: true,
           contentType,
         });
