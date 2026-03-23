@@ -21,6 +21,8 @@ interface ClubEvent {
   description: string;
   banner_image_url: string;
   instagram_link: string;
+  manual_registrations: number;
+  total_fund: number;
   status: string;
 }
 
@@ -107,6 +109,8 @@ export default function PastEvents({ club }: Props) {
     end_datetime: "",
     description: "",
     instagram_link: "",
+    manual_registrations: "",
+    total_fund: "",
   });
 
   const fetchEvents = async (showSpinner = true) => {
@@ -114,7 +118,7 @@ export default function PastEvents({ club }: Props) {
 
     const { data, error } = await supabase
       .from("club_events")
-      .select("id, event_name, start_datetime, description, banner_image_url, instagram_link, status")
+      .select("id, event_name, start_datetime, description, banner_image_url, instagram_link, manual_registrations, total_fund, status")
       .eq("club_id", club.id)
       .eq("status", "completed")
       .order("start_datetime", { ascending: false });
@@ -147,9 +151,9 @@ export default function PastEvents({ club }: Props) {
       let banner_image_url = "";
 
       if (bannerFile) {
-        const formattedBanner = await formatInstagramBanner(bannerFile);
         const path = `${club.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`;
-        const { error: uploadErr } = await supabase.storage.from("event-banners").upload(path, formattedBanner, {
+        const uploadFile = bannerFile.type === "image/jpeg" ? bannerFile : await formatInstagramBanner(bannerFile);
+        const { error: uploadErr } = await supabase.storage.from("event-banners").upload(path, uploadFile, {
           upsert: true,
           contentType: "image/jpeg",
         });
@@ -166,6 +170,8 @@ export default function PastEvents({ club }: Props) {
 
       const startDateIso = toEventIsoString(form.start_datetime);
       const endDateIso = toEventIsoString(form.end_datetime || form.start_datetime);
+      const manualRegistrations = Number.parseInt(form.manual_registrations || "0", 10);
+      const totalFund = Number.parseInt(form.total_fund || "0", 10);
 
       const { data: insertedEvent, error } = await supabase
         .from("club_events")
@@ -178,9 +184,11 @@ export default function PastEvents({ club }: Props) {
         description: form.description,
         instagram_link: form.instagram_link,
         banner_image_url,
+        manual_registrations: Number.isNaN(manualRegistrations) ? 0 : manualRegistrations,
+        total_fund: Number.isNaN(totalFund) ? 0 : totalFund,
         status: "completed",
       })
-        .select("id, event_name, start_datetime, description, banner_image_url, instagram_link, status")
+        .select("id, event_name, start_datetime, description, banner_image_url, instagram_link, manual_registrations, total_fund, status")
         .single();
 
       if (error) {
@@ -194,7 +202,7 @@ export default function PastEvents({ club }: Props) {
           void fetchEvents(false);
         }
         setShowForm(false);
-        setForm({ event_name: "", start_datetime: "", end_datetime: "", description: "", instagram_link: "" });
+        setForm({ event_name: "", start_datetime: "", end_datetime: "", description: "", instagram_link: "", manual_registrations: "", total_fund: "" });
         setBannerFile(null);
       }
     } catch (err: any) {
@@ -238,6 +246,28 @@ export default function PastEvents({ club }: Props) {
                 <Label>Description</Label>
                 <Textarea value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} rows={3} />
               </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Registrations Count</Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      value={form.manual_registrations}
+                      onChange={(e) => setForm((p) => ({ ...p, manual_registrations: e.target.value }))}
+                      placeholder="Enter total registrations"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Total Fund (₹)</Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      value={form.total_fund}
+                      onChange={(e) => setForm((p) => ({ ...p, total_fund: e.target.value }))}
+                      placeholder="Enter total fund"
+                    />
+                  </div>
+                </div>
               <div className="space-y-2">
                 <Label>Upload Images</Label>
                 <label className="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-lg border border-input bg-muted text-sm">
@@ -274,6 +304,10 @@ export default function PastEvents({ club }: Props) {
                   <h3 className="font-semibold text-foreground">{event.event_name}</h3>
                   <p className="text-sm text-muted-foreground">{format(new Date(event.start_datetime), "MMM dd, yyyy")}</p>
                   {event.description && <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{event.description}</p>}
+                   <div className="mt-2 flex flex-wrap gap-3 text-xs text-muted-foreground">
+                     <span>{event.manual_registrations || 0} registrations</span>
+                     <span>₹{(event.total_fund || 0).toLocaleString()} fund</span>
+                   </div>
                   {event.instagram_link && (
                     <a href={event.instagram_link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm text-primary mt-2 hover:underline">
                       <Instagram className="h-4 w-4" /> View on Instagram
