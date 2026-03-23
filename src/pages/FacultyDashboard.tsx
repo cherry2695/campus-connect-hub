@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useFacultyAuth } from "@/hooks/useFacultyAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -177,17 +177,29 @@ export default function FacultyDashboard() {
     navigate("/login", { replace: true });
   };
 
-  const filtered = programs.filter((p) => {
-    if (filterType !== "all" && p.program_type !== filterType) return false;
-    if (filterMode !== "all" && p.mode !== filterMode) return false;
-    if (searchQuery && !p.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-    return true;
-  });
+  const filtered = useMemo(() => {
+    const normalizedSearch = searchQuery.trim().toLowerCase();
+
+    return programs.filter((program) => {
+      const normalizedType = program.program_type.toLowerCase();
+      const normalizedMode = program.mode.toLowerCase();
+      const searchableText = [program.title, program.short_description, program.description]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+      if (filterType !== "all" && normalizedType !== filterType.toLowerCase()) return false;
+      if (filterMode !== "all" && normalizedMode !== filterMode.toLowerCase()) return false;
+      if (normalizedSearch && !searchableText.includes(normalizedSearch)) return false;
+
+      return true;
+    });
+  }, [filterMode, filterType, programs, searchQuery]);
 
   const featured = programs.filter((p) => p.status === "upcoming").slice(0, 4);
   const available = filtered.filter((p) => p.status !== "completed");
   const past = filtered.filter((p) => p.status === "completed");
-  const myPrograms = programs.filter((p) => isRegistered(p.id));
+  const myPrograms = filtered.filter((p) => isRegistered(p.id));
 
   if (loading) {
     return (
@@ -205,7 +217,7 @@ export default function FacultyDashboard() {
       <nav className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
           <div className="flex items-center gap-3">
-            <img src={mlritLogo} alt="MLRIT" className="h-10 w-auto object-contain" />
+            <img src={mlritLogo} alt="MLRIT" className="h-8 w-auto object-contain" />
             <span className="font-bold text-lg text-gray-900 hidden sm:block">Faculty Portal</span>
           </div>
           <div className="flex items-center gap-2">
