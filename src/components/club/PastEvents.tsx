@@ -24,6 +24,77 @@ interface ClubEvent {
   status: string;
 }
 
+const INSTAGRAM_POST_WIDTH = 1080;
+const INSTAGRAM_POST_HEIGHT = 1350;
+
+const toEventIsoString = (value: string) => {
+  if (!value) return "";
+  const normalizedValue = value.includes("T") ? value : `${value}T12:00:00`;
+  const parsedDate = new Date(normalizedValue);
+  if (Number.isNaN(parsedDate.getTime())) {
+    throw new Error("Please select a valid event date");
+  }
+  return parsedDate.toISOString();
+};
+
+const formatInstagramBanner = async (file: File) => {
+  if (typeof window === "undefined") return file;
+
+  return new Promise<File>((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const image = new Image();
+
+      image.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = INSTAGRAM_POST_WIDTH;
+        canvas.height = INSTAGRAM_POST_HEIGHT;
+
+        const context = canvas.getContext("2d");
+        if (!context) {
+          resolve(file);
+          return;
+        }
+
+        context.fillStyle = "#ffffff";
+        context.fillRect(0, 0, INSTAGRAM_POST_WIDTH, INSTAGRAM_POST_HEIGHT);
+
+        const scale = Math.max(
+          INSTAGRAM_POST_WIDTH / image.width,
+          INSTAGRAM_POST_HEIGHT / image.height,
+        );
+        const drawWidth = image.width * scale;
+        const drawHeight = image.height * scale;
+        const offsetX = (INSTAGRAM_POST_WIDTH - drawWidth) / 2;
+        const offsetY = (INSTAGRAM_POST_HEIGHT - drawHeight) / 2;
+
+        context.drawImage(image, offsetX, offsetY, drawWidth, drawHeight);
+
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) {
+              reject(new Error("Failed to prepare event image"));
+              return;
+            }
+
+            const normalizedName = file.name.replace(/\.[^.]+$/, "") || "event-banner";
+            resolve(new File([blob], `${normalizedName}.jpg`, { type: "image/jpeg" }));
+          },
+          "image/jpeg",
+          0.9,
+        );
+      };
+
+      image.onerror = () => reject(new Error("Please upload a valid image file"));
+      image.src = typeof reader.result === "string" ? reader.result : "";
+    };
+
+    reader.onerror = () => reject(new Error("Unable to read the selected image"));
+    reader.readAsDataURL(file);
+  });
+};
+
 export default function PastEvents({ club }: Props) {
   const [events, setEvents] = useState<ClubEvent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -38,65 +109,93 @@ export default function PastEvents({ club }: Props) {
     instagram_link: "",
   });
 
-  const fetchEvents = async () => {
-    setLoading(true);
-    const { data } = await supabase
+  const fetchEvents = async (showSpinner = true) => {
+    if (showSpinner) setLoading(true);
+
+    const { data, error } = await supabase
       .from("club_events")
       .select("id, event_name, start_datetime, description, banner_image_url, instagram_link, status")
       .eq("club_id", club.id)
       .eq("status", "completed")
       .order("start_datetime", { ascending: false });
-    setEvents((data as ClubEvent[]) || []);
-    setLoading(false);
+
+    if (error) {
+      toast({ title: "Unable to load past events", description: error.message, variant: "destructive" });
+    } else {
+      setEvents((data as ClubEvent[]) || []);
+    }
+
+    if (showSpinner) setLoading(false);
   };
 
-  useEffect(() => { fetchEvents(); }, [club.id]);
+  useEffect(() => {
+    void fetchEvents();
+  }, [club.id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (saving) return;
+
     if (!form.event_name || !form.start_datetime) {
       toast({ title: "Event name and date are required", variant: "destructive" });
       return;
     }
+
     setSaving(true);
 
     try {
       let banner_image_url = "";
+
       if (bannerFile) {
-        const ext = bannerFile.name.split(".").pop();
-        const path = `${club.id}/${Date.now()}.${ext}`;
-        const { error: uploadErr } = await supabase.storage.from("event-banners").upload(path, bannerFile, { upsert: true });
+        const formattedBanner = await formatInstagramBanner(bannerFile);
+        const path = `${club.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`;
+        const { error: uploadErr } = await supabase.storage.from("event-banners").upload(path, formattedBanner, {
+          upsert: true,
+          contentType: "image/jpeg",
+        });
+
         if (uploadErr) {
           console.error("Upload error:", uploadErr);
           toast({ title: "Image upload failed", description: uploadErr.message, variant: "destructive" });
-          setSaving(false);
           return;
         }
+
         const { data: urlData } = supabase.storage.from("event-banners").getPublicUrl(path);
         banner_image_url = urlData.publicUrl;
       }
 
-      const { error } = await supabase.from("club_events").insert({
+      const startDateIso = toEventIsoString(form.start_datetime);
+      const endDateIso = toEventIsoString(form.end_datetime || form.start_datetime);
+
+      const { data: insertedEvent, error } = await supabase
+        .from("club_events")
+        .insert({
         club_id: club.id,
         event_name: form.event_name,
         short_name: form.event_name.substring(0, 20),
-        start_datetime: new Date(form.start_datetime).toISOString(),
-        end_datetime: form.end_datetime ? new Date(form.end_datetime).toISOString() : new Date(form.start_datetime).toISOString(),
+        start_datetime: startDateIso,
+        end_datetime: endDateIso,
         description: form.description,
         instagram_link: form.instagram_link,
         banner_image_url,
         status: "completed",
-      });
+      })
+        .select("id, event_name, start_datetime, description, banner_image_url, instagram_link, status")
+        .single();
 
       if (error) {
         console.error("Insert error:", error);
         toast({ title: "Error adding event", description: error.message, variant: "destructive" });
       } else {
         toast({ title: "Past event added!" });
+        if (insertedEvent) {
+          setEvents((previous) => [insertedEvent as ClubEvent, ...previous]);
+        } else {
+          void fetchEvents(false);
+        }
         setShowForm(false);
         setForm({ event_name: "", start_datetime: "", end_datetime: "", description: "", instagram_link: "" });
         setBannerFile(null);
-        fetchEvents();
       }
     } catch (err: any) {
       console.error("Unexpected error:", err);
@@ -127,12 +226,12 @@ export default function PastEvents({ club }: Props) {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Start Date *</Label>
-                  <Input type="datetime-local" value={form.start_datetime} onChange={(e) => setForm((p) => ({ ...p, start_datetime: e.target.value }))} />
+                  <Label>Event Date *</Label>
+                  <Input type="date" min="2023-01-01" max="2026-12-31" value={form.start_datetime} onChange={(e) => setForm((p) => ({ ...p, start_datetime: e.target.value }))} />
                 </div>
                 <div className="space-y-2">
                   <Label>End Date</Label>
-                  <Input type="datetime-local" value={form.end_datetime} onChange={(e) => setForm((p) => ({ ...p, end_datetime: e.target.value }))} />
+                  <Input type="date" min="2023-01-01" max="2026-12-31" value={form.end_datetime} onChange={(e) => setForm((p) => ({ ...p, end_datetime: e.target.value }))} />
                 </div>
               </div>
               <div className="space-y-2">
@@ -168,7 +267,7 @@ export default function PastEvents({ club }: Props) {
               <CardContent className="p-0 flex flex-col sm:flex-row">
                 {event.banner_image_url && (
                   <div className="sm:w-48 h-32 sm:h-auto bg-muted shrink-0">
-                    <img src={event.banner_image_url} alt={event.event_name} className="w-full h-full object-cover" />
+                    <img src={event.banner_image_url} alt={event.event_name} className="w-full h-full object-cover" loading="lazy" />
                   </div>
                 )}
                 <div className="p-4 flex-1">
