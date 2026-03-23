@@ -373,7 +373,9 @@ export default function FacultyDashboard() {
                 {past.map((p) => (
                   <Card key={p.id} className="overflow-hidden bg-white border-gray-200">
                     {p.banner_image_url && (
-                      <img src={p.banner_image_url} alt={p.title} className="w-full h-40 object-cover" />
+                      <div className="aspect-[4/5] w-full overflow-hidden bg-gray-100">
+                        <img src={p.banner_image_url} alt={p.title} className="h-full w-full object-cover object-center" />
+                      </div>
                     )}
                     <CardContent className="p-4">
                       <h3 className="font-semibold text-gray-900">{p.title}</h3>
@@ -484,10 +486,12 @@ function ProgramCard({ program, registered, onRegister }: { program: Program; re
   return (
     <Card className="overflow-hidden bg-white border-gray-200 hover:shadow-md transition-shadow">
       {program.banner_image_url && (
-        <img src={program.banner_image_url} alt={program.title} className="w-full h-40 object-cover" />
+        <div className="aspect-[4/5] w-full overflow-hidden bg-gray-100">
+          <img src={program.banner_image_url} alt={program.title} className="h-full w-full object-cover object-center" />
+        </div>
       )}
       {!program.banner_image_url && (
-        <div className="w-full h-40 bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
+        <div className="aspect-[4/5] w-full bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
           <Calendar className="h-10 w-10 text-blue-300" />
         </div>
       )}
