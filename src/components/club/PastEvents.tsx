@@ -21,11 +21,10 @@ interface ClubEvent {
   description: string;
   banner_image_url: string;
   instagram_link: string;
+  manual_registrations: number;
+  total_fund: number;
   status: string;
 }
-
-const INSTAGRAM_POST_WIDTH = 1080;
-const INSTAGRAM_POST_HEIGHT = 1350;
 
 const toEventIsoString = (value: string) => {
   if (!value) return "";
@@ -35,64 +34,6 @@ const toEventIsoString = (value: string) => {
     throw new Error("Please select a valid event date");
   }
   return parsedDate.toISOString();
-};
-
-const formatInstagramBanner = async (file: File) => {
-  if (typeof window === "undefined") return file;
-
-  return new Promise<File>((resolve, reject) => {
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      const image = new Image();
-
-      image.onload = () => {
-        const canvas = document.createElement("canvas");
-        canvas.width = INSTAGRAM_POST_WIDTH;
-        canvas.height = INSTAGRAM_POST_HEIGHT;
-
-        const context = canvas.getContext("2d");
-        if (!context) {
-          resolve(file);
-          return;
-        }
-
-        context.fillStyle = "#ffffff";
-        context.fillRect(0, 0, INSTAGRAM_POST_WIDTH, INSTAGRAM_POST_HEIGHT);
-
-        const scale = Math.max(
-          INSTAGRAM_POST_WIDTH / image.width,
-          INSTAGRAM_POST_HEIGHT / image.height,
-        );
-        const drawWidth = image.width * scale;
-        const drawHeight = image.height * scale;
-        const offsetX = (INSTAGRAM_POST_WIDTH - drawWidth) / 2;
-        const offsetY = (INSTAGRAM_POST_HEIGHT - drawHeight) / 2;
-
-        context.drawImage(image, offsetX, offsetY, drawWidth, drawHeight);
-
-        canvas.toBlob(
-          (blob) => {
-            if (!blob) {
-              reject(new Error("Failed to prepare event image"));
-              return;
-            }
-
-            const normalizedName = file.name.replace(/\.[^.]+$/, "") || "event-banner";
-            resolve(new File([blob], `${normalizedName}.jpg`, { type: "image/jpeg" }));
-          },
-          "image/jpeg",
-          0.9,
-        );
-      };
-
-      image.onerror = () => reject(new Error("Please upload a valid image file"));
-      image.src = typeof reader.result === "string" ? reader.result : "";
-    };
-
-    reader.onerror = () => reject(new Error("Unable to read the selected image"));
-    reader.readAsDataURL(file);
-  });
 };
 
 export default function PastEvents({ club }: Props) {
@@ -107,6 +48,8 @@ export default function PastEvents({ club }: Props) {
     end_datetime: "",
     description: "",
     instagram_link: "",
+    manual_registrations: "",
+    total_fund: "",
   });
 
   const fetchEvents = async (showSpinner = true) => {
@@ -114,7 +57,7 @@ export default function PastEvents({ club }: Props) {
 
     const { data, error } = await supabase
       .from("club_events")
-      .select("id, event_name, start_datetime, description, banner_image_url, instagram_link, status")
+      .select("id, event_name, start_datetime, description, banner_image_url, instagram_link, manual_registrations, total_fund, status")
       .eq("club_id", club.id)
       .eq("status", "completed")
       .order("start_datetime", { ascending: false });
@@ -147,11 +90,13 @@ export default function PastEvents({ club }: Props) {
       let banner_image_url = "";
 
       if (bannerFile) {
-        const formattedBanner = await formatInstagramBanner(bannerFile);
-        const path = `${club.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`;
-        const { error: uploadErr } = await supabase.storage.from("event-banners").upload(path, formattedBanner, {
+        const fileExtension = bannerFile.name.split(".").pop()?.toLowerCase() || "png";
+        const safeExtension = ["jpg", "jpeg", "png", "webp"].includes(fileExtension) ? fileExtension : "png";
+        const contentType = bannerFile.type || `image/${safeExtension === "jpg" ? "jpeg" : safeExtension}`;
+        const path = `${club.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${safeExtension}`;
+        const { error: uploadErr } = await supabase.storage.from("event-banners").upload(path, bannerFile, {
           upsert: true,
-          contentType: "image/jpeg",
+          contentType,
         });
 
         if (uploadErr) {
@@ -166,6 +111,8 @@ export default function PastEvents({ club }: Props) {
 
       const startDateIso = toEventIsoString(form.start_datetime);
       const endDateIso = toEventIsoString(form.end_datetime || form.start_datetime);
+      const manualRegistrations = Number.parseInt(form.manual_registrations || "0", 10);
+      const totalFund = Number.parseInt(form.total_fund || "0", 10);
 
       const { data: insertedEvent, error } = await supabase
         .from("club_events")
@@ -178,9 +125,11 @@ export default function PastEvents({ club }: Props) {
         description: form.description,
         instagram_link: form.instagram_link,
         banner_image_url,
+        manual_registrations: Number.isNaN(manualRegistrations) ? 0 : manualRegistrations,
+        total_fund: Number.isNaN(totalFund) ? 0 : totalFund,
         status: "completed",
       })
-        .select("id, event_name, start_datetime, description, banner_image_url, instagram_link, status")
+        .select("id, event_name, start_datetime, description, banner_image_url, instagram_link, manual_registrations, total_fund, status")
         .single();
 
       if (error) {
@@ -194,7 +143,7 @@ export default function PastEvents({ club }: Props) {
           void fetchEvents(false);
         }
         setShowForm(false);
-        setForm({ event_name: "", start_datetime: "", end_datetime: "", description: "", instagram_link: "" });
+        setForm({ event_name: "", start_datetime: "", end_datetime: "", description: "", instagram_link: "", manual_registrations: "", total_fund: "" });
         setBannerFile(null);
       }
     } catch (err: any) {
@@ -238,6 +187,28 @@ export default function PastEvents({ club }: Props) {
                 <Label>Description</Label>
                 <Textarea value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} rows={3} />
               </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Registrations Count</Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      value={form.manual_registrations}
+                      onChange={(e) => setForm((p) => ({ ...p, manual_registrations: e.target.value }))}
+                      placeholder="Enter total registrations"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Total Fund (₹)</Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      value={form.total_fund}
+                      onChange={(e) => setForm((p) => ({ ...p, total_fund: e.target.value }))}
+                      placeholder="Enter total fund"
+                    />
+                  </div>
+                </div>
               <div className="space-y-2">
                 <Label>Upload Images</Label>
                 <label className="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-lg border border-input bg-muted text-sm">
@@ -274,6 +245,10 @@ export default function PastEvents({ club }: Props) {
                   <h3 className="font-semibold text-foreground">{event.event_name}</h3>
                   <p className="text-sm text-muted-foreground">{format(new Date(event.start_datetime), "MMM dd, yyyy")}</p>
                   {event.description && <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{event.description}</p>}
+                   <div className="mt-2 flex flex-wrap gap-3 text-xs text-muted-foreground">
+                     <span>{event.manual_registrations || 0} registrations</span>
+                     <span>₹{(event.total_fund || 0).toLocaleString()} fund</span>
+                   </div>
                   {event.instagram_link && (
                     <a href={event.instagram_link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm text-primary mt-2 hover:underline">
                       <Instagram className="h-4 w-4" /> View on Instagram

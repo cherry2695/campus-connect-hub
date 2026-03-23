@@ -14,6 +14,8 @@ interface EventAnalytics {
   event_name: string;
   pricing_type: string;
   amount: number;
+  manual_registrations: number;
+  total_fund: number;
   registrations: number;
   revenue: number;
   refunds: number;
@@ -29,7 +31,7 @@ export default function ClubAnalytics({ club }: Props) {
     async function load() {
       const { data: events } = await supabase
         .from("club_events")
-        .select("id, event_name, pricing_type, amount")
+        .select("id, event_name, pricing_type, amount, manual_registrations, total_fund")
         .eq("club_id", club.id);
 
       if (!events || events.length === 0) { setLoading(false); return; }
@@ -42,8 +44,9 @@ export default function ClubAnalytics({ club }: Props) {
           .select("id", { count: "exact", head: true })
           .eq("event_id", event.id);
 
-        const regs = count || 0;
-        const revenue = event.pricing_type === "paid" ? regs * (event.amount || 0) : 0;
+        const regs = Math.max(count || 0, event.manual_registrations || 0);
+        const computedRevenue = event.pricing_type === "paid" ? regs * (event.amount || 0) : 0;
+        const revenue = Math.max(computedRevenue, event.total_fund || 0);
         const refunds = Math.floor(revenue * 0.02); // mock 2% refund
         const netRevenue = revenue - refunds;
 
@@ -56,6 +59,8 @@ export default function ClubAnalytics({ club }: Props) {
           event_name: event.event_name,
           pricing_type: event.pricing_type,
           amount: event.amount,
+          manual_registrations: event.manual_registrations || 0,
+          total_fund: event.total_fund || 0,
           registrations: regs,
           revenue,
           refunds,

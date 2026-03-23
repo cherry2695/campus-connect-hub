@@ -28,10 +28,12 @@ export type Database = {
           id: string
           instagram_link: string | null
           keywords: string | null
+          manual_registrations: number
           pricing_type: string
           short_name: string | null
           start_datetime: string
           status: string
+          total_fund: number
           updated_at: string
           venue: string | null
           venue_details: string | null
@@ -50,10 +52,12 @@ export type Database = {
           id?: string
           instagram_link?: string | null
           keywords?: string | null
+          manual_registrations?: number
           pricing_type?: string
           short_name?: string | null
           start_datetime: string
           status?: string
+          total_fund?: number
           updated_at?: string
           venue?: string | null
           venue_details?: string | null
@@ -72,10 +76,12 @@ export type Database = {
           id?: string
           instagram_link?: string | null
           keywords?: string | null
+          manual_registrations?: number
           pricing_type?: string
           short_name?: string | null
           start_datetime?: string
           status?: string
+          total_fund?: number
           updated_at?: string
           venue?: string | null
           venue_details?: string | null
