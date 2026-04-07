@@ -22,9 +22,19 @@ export default function ClubSidebar({ club, onLogout }: ClubSidebarProps) {
 
   return (
     <aside className="w-64 min-h-screen bg-card border-r border-border flex flex-col">
-      <div className="p-6 border-b border-border">
-        <h2 className="text-lg font-bold text-foreground truncate">{club.club_name}</h2>
-        <p className="text-xs text-muted-foreground truncate">{club.email}</p>
+      <div className="p-6 border-b border-border space-y-4">
+        <div>
+          <h2 className="text-lg font-bold text-foreground truncate">{club.club_name}</h2>
+          <p className="text-xs text-muted-foreground truncate">{club.email}</p>
+        </div>
+
+        <button
+          onClick={onLogout}
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors border border-border"
+        >
+          <LogOut className="h-4 w-4" />
+          Logout
+        </button>
       </div>
 
       <nav className="flex-1 p-3 space-y-1">
@@ -48,16 +58,6 @@ export default function ClubSidebar({ club, onLogout }: ClubSidebarProps) {
           );
         })}
       </nav>
-
-      <div className="p-3 border-t border-border">
-        <button
-          onClick={onLogout}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
-        >
-          <LogOut className="h-5 w-5" />
-          Logout
-        </button>
-      </div>
     </aside>
   );
 }
