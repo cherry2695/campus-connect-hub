@@ -26,6 +26,8 @@ interface ClubEvent {
   status: string;
 }
 
+const PAST_EVENT_SELECT = "id, event_name, start_datetime, description, banner_image_url, instagram_link, manual_registrations, total_fund, status";
+
 const toEventIsoString = (value: string) => {
   if (!value) return "";
   const normalizedValue = value.includes("T") ? value : `${value}T12:00:00`;
@@ -57,7 +59,7 @@ export default function PastEvents({ club }: Props) {
 
     const { data, error } = await supabase
       .from("club_events")
-      .select("id, event_name, start_datetime, description, banner_image_url, instagram_link, manual_registrations, total_fund, status")
+      .select(PAST_EVENT_SELECT)
       .eq("club_id", club.id)
       .eq("status", "completed")
       .order("start_datetime", { ascending: false });
@@ -87,50 +89,22 @@ export default function PastEvents({ club }: Props) {
     setSaving(true);
 
     try {
-      let banner_image_url = "";
+      const payload = new FormData();
+      payload.append("event_name", form.event_name.trim());
+      payload.append("start_datetime", form.start_datetime);
+      payload.append("end_datetime", form.end_datetime || form.start_datetime);
+      payload.append("description", form.description.trim());
+      payload.append("instagram_link", form.instagram_link.trim());
+      payload.append("manual_registrations", form.manual_registrations || "0");
+      payload.append("total_fund", form.total_fund || "0");
 
       if (bannerFile) {
-        const fileExtension = bannerFile.name.split(".").pop()?.toLowerCase() || "png";
-        const safeExtension = ["jpg", "jpeg", "png", "webp"].includes(fileExtension) ? fileExtension : "png";
-        const contentType = bannerFile.type || `image/${safeExtension === "jpg" ? "jpeg" : safeExtension}`;
-        const path = `${club.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${safeExtension}`;
-        const { error: uploadErr } = await supabase.storage.from("event-banners").upload(path, bannerFile, {
-          upsert: true,
-          contentType,
-        });
-
-        if (uploadErr) {
-          console.error("Upload error:", uploadErr);
-          toast({ title: "Image upload failed", description: uploadErr.message, variant: "destructive" });
-          return;
-        }
-
-        const { data: urlData } = supabase.storage.from("event-banners").getPublicUrl(path);
-        banner_image_url = urlData.publicUrl;
+        payload.append("banner", bannerFile);
       }
 
-      const startDateIso = toEventIsoString(form.start_datetime);
-      const endDateIso = toEventIsoString(form.end_datetime || form.start_datetime);
-      const manualRegistrations = Number.parseInt(form.manual_registrations || "0", 10);
-      const totalFund = Number.parseInt(form.total_fund || "0", 10);
-
-      const { data: insertedEvent, error } = await supabase
-        .from("club_events")
-        .insert({
-        club_id: club.id,
-        event_name: form.event_name,
-        short_name: form.event_name.substring(0, 20),
-        start_datetime: startDateIso,
-        end_datetime: endDateIso,
-        description: form.description,
-        instagram_link: form.instagram_link,
-        banner_image_url,
-        manual_registrations: Number.isNaN(manualRegistrations) ? 0 : manualRegistrations,
-        total_fund: Number.isNaN(totalFund) ? 0 : totalFund,
-        status: "completed",
-      })
-        .select("id, event_name, start_datetime, description, banner_image_url, instagram_link, manual_registrations, total_fund, status")
-        .single();
+      const { data: insertedEvent, error } = await supabase.functions.invoke("save-past-event", {
+        body: payload,
+      });
 
       if (error) {
         console.error("Insert error:", error);
@@ -237,7 +211,7 @@ export default function PastEvents({ club }: Props) {
             <Card key={event.id} className="overflow-hidden">
               <CardContent className="p-0 flex flex-col sm:flex-row">
                 {event.banner_image_url && (
-                  <div className="sm:w-48 h-32 sm:h-auto bg-muted shrink-0">
+          <div className="sm:w-48 aspect-[4/5] bg-muted shrink-0 overflow-hidden">
                     <img src={event.banner_image_url} alt={event.event_name} className="w-full h-full object-cover" loading="lazy" />
                   </div>
                 )}
