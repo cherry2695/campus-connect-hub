@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,6 +40,7 @@ const toEventIsoString = (value: string) => {
 };
 
 export default function PastEvents({ club }: Props) {
+  const navigate = useNavigate();
   const [events, setEvents] = useState<ClubEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -208,7 +210,7 @@ export default function PastEvents({ club }: Props) {
       ) : (
         <div className="grid gap-4">
           {events.map((event) => (
-            <Card key={event.id} className="overflow-hidden">
+            <Card key={event.id} className="overflow-hidden cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate(`/event/${event.id}`)}>
               <CardContent className="p-0 flex flex-col sm:flex-row">
                 {event.banner_image_url && (
           <div className="sm:w-48 aspect-[4/5] bg-muted shrink-0 overflow-hidden">

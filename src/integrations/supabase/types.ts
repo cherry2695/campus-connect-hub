@@ -14,9 +14,40 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_notifications: {
+        Row: {
+          club_id: string
+          created_at: string
+          event_id: string | null
+          id: string
+          is_read: boolean
+          message: string
+          notification_type: string
+        }
+        Insert: {
+          club_id: string
+          created_at?: string
+          event_id?: string | null
+          id?: string
+          is_read?: boolean
+          message?: string
+          notification_type?: string
+        }
+        Update: {
+          club_id?: string
+          created_at?: string
+          event_id?: string | null
+          id?: string
+          is_read?: boolean
+          message?: string
+          notification_type?: string
+        }
+        Relationships: []
+      }
       club_events: {
         Row: {
           amount: number
+          approval_status: string
           banner_image_url: string | null
           club_id: string
           created_at: string
@@ -41,6 +72,7 @@ export type Database = {
         }
         Insert: {
           amount?: number
+          approval_status?: string
           banner_image_url?: string | null
           club_id: string
           created_at?: string
@@ -65,6 +97,7 @@ export type Database = {
         }
         Update: {
           amount?: number
+          approval_status?: string
           banner_image_url?: string | null
           club_id?: string
           created_at?: string
