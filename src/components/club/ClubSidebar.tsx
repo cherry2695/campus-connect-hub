@@ -1,4 +1,4 @@
-import { LayoutDashboard, PlusCircle, Settings, History, BarChart3, LogOut } from "lucide-react";
+import { LayoutDashboard, PlusCircle, Settings, History, BarChart3, LogOut, Bell } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import type { ClubInfo } from "@/hooks/useClubAuth";
@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   { label: "Manage Events", icon: Settings, path: "/club-portal/manage-events" },
   { label: "Past Events", icon: History, path: "/club-portal/past-events" },
   { label: "Analytics", icon: BarChart3, path: "/club-portal/analytics" },
+  { label: "Notifications", icon: Bell, path: "/club-portal/notifications" },
 ];
 
 export default function ClubSidebar({ club, onLogout }: ClubSidebarProps) {
