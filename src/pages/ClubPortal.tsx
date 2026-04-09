@@ -7,6 +7,7 @@ import CreateEvent from "@/components/club/CreateEvent";
 import ManageEvents from "@/components/club/ManageEvents";
 import PastEvents from "@/components/club/PastEvents";
 import ClubAnalytics from "@/components/club/ClubAnalytics";
+import ClubNotifications from "@/components/club/ClubNotifications";
 import { Loader2 } from "lucide-react";
 
 export default function ClubPortal() {
@@ -44,6 +45,7 @@ export default function ClubPortal() {
           <Route path="manage-events" element={<ManageEvents club={club} />} />
           <Route path="past-events" element={<PastEvents club={club} />} />
           <Route path="analytics" element={<ClubAnalytics club={club} />} />
+          <Route path="notifications" element={<ClubNotifications club={club} />} />
           <Route path="*" element={<Navigate to="/club-portal" replace />} />
         </Routes>
       </main>
