@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
 import {
   Loader2, LogOut, User, ChevronLeft, ChevronRight, Search,
-  Calendar, MapPin, Clock, Tag, Upload, X, CheckCircle2
+  Calendar, MapPin, Clock, Tag, Upload, X, CheckCircle2, Bell, AlertTriangle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
