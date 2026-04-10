@@ -290,7 +290,28 @@ export default function FacultyDashboard() {
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-10">
+      {/* NBA Inspection Alert Banner */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-4">
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3 shadow-sm">
+          <div className="shrink-0 mt-0.5">
+            <div className="bg-amber-100 rounded-full p-2">
+              <AlertTriangle className="h-5 w-5 text-amber-600" />
+            </div>
+          </div>
+          <div className="flex-1">
+            <h3 className="font-semibold text-amber-900 text-sm flex items-center gap-2">
+              <Bell className="h-4 w-4" /> Important Notification
+            </h3>
+            <p className="text-amber-800 text-sm mt-1">
+              <strong>NBA Inspection</strong> is scheduled at MLRIT on <strong>10th & 11th April 2025</strong>. 
+              All faculty members are requested to ensure all documentation, lab records, and course files are up to date. 
+              Department-wise preparatory meetings will be conducted prior to the inspection.
+            </p>
+          </div>
+          <Badge className="bg-amber-200 text-amber-800 shrink-0">Urgent</Badge>
+        </div>
+      </div>
+
         {/* Featured Programs */}
         {featured.length > 0 && (
           <section>
