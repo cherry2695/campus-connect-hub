@@ -22,9 +22,11 @@ import {
 
 import icasmmt from "@/assets/slides/icasmmt.png";
 import startupDay from "@/assets/slides/startup-day.png";
+import nbaInspection from "@/assets/events/nba-inspection.png";
 import mlritLogo from "@/assets/mlrit-logo.png";
 
 const SLIDES = [
+  { src: nbaInspection, alt: "NBA Inspection 2025" },
   { src: icasmmt, alt: "ICASMMT 2025" },
   { src: startupDay, alt: "National Startup Day" },
 ];
