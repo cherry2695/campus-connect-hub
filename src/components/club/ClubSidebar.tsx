@@ -1,7 +1,19 @@
-import { LayoutDashboard, PlusCircle, Settings, History, BarChart3, LogOut, Bell } from "lucide-react";
+import { LayoutDashboard, PlusCircle, Settings, History, BarChart3, LogOut, Bell, Instagram } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import type { ClubInfo } from "@/hooks/useClubAuth";
+
+import cieLogo from "@/assets/clubs/cie-logo.png";
+import codeLogo from "@/assets/clubs/code-logo.png";
+import cameLogo from "@/assets/clubs/came-logo.png";
+import apexLogo from "@/assets/clubs/apex-logo.png";
+
+const CLUB_LOGOS: Record<string, string> = {
+  "cie@mlrit.ac.in": cieLogo,
+  "codeclub@mlrit.ac.in": codeLogo,
+  "cameclub@mlrit.ac.in": cameLogo,
+  "apex@mlrit.ac.in": apexLogo,
+};
 
 interface ClubSidebarProps {
   club: ClubInfo;
@@ -20,14 +32,27 @@ const NAV_ITEMS = [
 export default function ClubSidebar({ club, onLogout }: ClubSidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
+  const logo = CLUB_LOGOS[club.email];
 
   return (
     <aside className="w-64 min-h-screen bg-card border-r border-border flex flex-col">
-      <div className="p-6 border-b border-border space-y-4">
-        <div>
-          <h2 className="text-lg font-bold text-foreground truncate">{club.club_name}</h2>
-          <p className="text-xs text-muted-foreground truncate">{club.email}</p>
+      <div className="p-5 border-b border-border space-y-4">
+        <div className="flex items-center gap-3">
+          {logo && (
+            <img src={logo} alt={club.club_name} className="h-10 w-10 rounded-lg object-contain bg-muted p-0.5" loading="lazy" />
+          )}
+          <div className="min-w-0">
+            <h2 className="text-sm font-bold text-foreground truncate">{club.club_name}</h2>
+            <p className="text-[10px] text-muted-foreground truncate">{club.email}</p>
+          </div>
         </div>
+
+        {club.instagram_url && (
+          <a href={club.instagram_url} target="_blank" rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-pink-600 hover:bg-pink-50 transition-colors border border-pink-200">
+            <Instagram className="h-3.5 w-3.5" /> Follow on Instagram
+          </a>
+        )}
 
         <button
           onClick={onLogout}

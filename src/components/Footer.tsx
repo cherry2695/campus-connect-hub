@@ -1,3 +1,14 @@
+import { Instagram } from "lucide-react";
+
+const CLUBS = [
+  { name: "CIE Club", url: "https://www.instagram.com/mlritcie/" },
+  { name: "Code Club", url: "https://www.instagram.com/codeclub_mlrit/" },
+  { name: "CAME Club", url: "https://www.instagram.com/cameclub_mlrit/" },
+  { name: "APEX Club", url: "https://www.instagram.com/apexmlrit/" },
+  { name: "SCOPE Club", url: "https://www.instagram.com/mlrit_scope/" },
+  { name: "Club Literati", url: "https://www.instagram.com/mlrclubliterati/" },
+];
+
 const Footer = () => {
   const handleNav = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
@@ -6,7 +17,7 @@ const Footer = () => {
   return (
     <footer id="contact" className="bg-foreground text-background/70 py-16">
       <div className="container mx-auto px-4 lg:px-8">
-        <div className="grid md:grid-cols-3 gap-12">
+        <div className="grid md:grid-cols-4 gap-12">
           <div>
             <h3 className="text-lg font-bold text-background mb-2">Campus Connect</h3>
             <p className="text-sm leading-relaxed">
@@ -29,9 +40,24 @@ const Footer = () => {
           </div>
 
           <div>
+            <h4 className="text-sm font-semibold text-background mb-4 uppercase tracking-widest">Club Instagram</h4>
+            <ul className="space-y-2 text-sm">
+              {CLUBS.map((club) => (
+                <li key={club.name}>
+                  <a href={club.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 hover:text-background transition-colors">
+                    <Instagram className="h-3.5 w-3.5" /> {club.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
             <h4 className="text-sm font-semibold text-background mb-4 uppercase tracking-widest">Connect</h4>
-            <div className="flex gap-4 text-sm">
-              <a href="https://www.instagram.com/mlritofficial/" target="_blank" rel="noopener noreferrer" className="hover:text-background transition-colors">Instagram</a>
+            <div className="flex flex-col gap-2 text-sm">
+              <a href="https://www.instagram.com/mlritofficial/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 hover:text-background transition-colors">
+                <Instagram className="h-3.5 w-3.5" /> MLRIT Official
+              </a>
               <span className="hover:text-background transition-colors cursor-pointer">LinkedIn</span>
               <span className="hover:text-background transition-colors cursor-pointer">Twitter</span>
             </div>
